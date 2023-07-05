@@ -2,7 +2,7 @@ package base
 
 import kotlin.math.abs
 
-infix fun <T : Coordinates> T.distanceTo(other: T): Int {
+infix fun <T : Coordinates<T>> T.distanceTo(other: T): Int {
     val left = this.hex
     val right = other.hex
     return maxOf(
@@ -10,4 +10,18 @@ infix fun <T : Coordinates> T.distanceTo(other: T): Int {
         abs(left.q + left.r - right.q - right.r),
         abs(left.r - right.r),
     )
+}
+
+
+infix fun <T : Coordinates<T>> T.lineTo(other: T): List<T> {
+    val left = this.hex
+    val right = other.hex
+    val distance = this distanceTo other
+    val result = mutableListOf<T>()
+    for (i in 0..distance) {
+        val q = left.q + (right.q - left.q) * i / distance
+        val r = left.r + (right.r - left.r) * i / distance
+        result.add(HexCoordinates(q, r).into())
+    }
+    return result
 }
