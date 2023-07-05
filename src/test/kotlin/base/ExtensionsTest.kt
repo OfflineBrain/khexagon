@@ -19,9 +19,20 @@ class ExtensionsTest : DescribeSpec({
             )
         }
 
-        it("should handle conversion between coordinate systems") {
+        it("should handle conversion between coordinate representations") {
             val start = HexCoordinates(0, 0).toEvenQCoordinates()
             val end = HexCoordinates(2, -2).toEvenQCoordinates()
+            val line = start lineTo end
+            line shouldBe listOf(
+                HexCoordinates(0, 0).toEvenQCoordinates(),
+                HexCoordinates(1, -1).toEvenQCoordinates(),
+                HexCoordinates(2, -2).toEvenQCoordinates(),
+            )
+        }
+
+        it("should handle different coordinate representations") {
+            val start = HexCoordinates(0, 0).toEvenQCoordinates()
+            val end = HexCoordinates(2, -2).toDoubleWidthCoordinates()
             val line = start lineTo end
             line shouldBe listOf(
                 HexCoordinates(0, 0).toEvenQCoordinates(),
