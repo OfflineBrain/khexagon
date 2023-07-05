@@ -42,19 +42,19 @@ class CoordinatesTest : DescribeSpec({
             it("should be 0 for the same coordinates") {
                 checkAll(gen) { q ->
                     val coordinates = HexCoordinates(q, q)
-                    (coordinates distance coordinates) shouldBe 0
+                    (coordinates distanceTo coordinates) shouldBe 0
                 }
             }
 
             it("should be 1 for adjacent coordinates") {
                 checkAll(gen) { q ->
                     val coordinates = HexCoordinates(q, q)
-                    (coordinates distance coordinates + HexCoordinates(1, 0)) shouldBe 1
-                    (coordinates distance coordinates + HexCoordinates(0, 1)) shouldBe 1
-                    (coordinates distance coordinates + HexCoordinates(-1, 1)) shouldBe 1
-                    (coordinates distance coordinates + HexCoordinates(-1, 0)) shouldBe 1
-                    (coordinates distance coordinates + HexCoordinates(0, -1)) shouldBe 1
-                    (coordinates distance coordinates + HexCoordinates(1, -1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates(1, 0)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates(0, 1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates(-1, 1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates(-1, 0)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates(0, -1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates(1, -1)) shouldBe 1
                 }
             }
 
@@ -62,7 +62,7 @@ class CoordinatesTest : DescribeSpec({
                 checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                     val coordinates1 = HexCoordinates(q1, r1)
                     val coordinates2 = HexCoordinates(q2, r2)
-                    (coordinates1 distance coordinates2) shouldBe maxOf(
+                    (coordinates1 distanceTo coordinates2) shouldBe maxOf(
                         abs(q1 - q2),
                         abs(r1 - r2),
                         abs(coordinates1.s - coordinates2.s)
@@ -90,7 +90,7 @@ class CoordinatesTest : DescribeSpec({
                 checkAll(gen, gen) { q, r ->
                     val coordinates = HexCoordinates(q, r)
                     coordinates.neighbors.forEach {
-                        (coordinates distance it) shouldBe 1
+                        (coordinates distanceTo it) shouldBe 1
                     }
                 }
             }
@@ -181,7 +181,7 @@ class CoordinatesTest : DescribeSpec({
                     checkAll(gen, gen) { q, r ->
                         val coordinates = HexCoordinates(q, r).toDoubleWidthCoordinates()
                         coordinates.neighbors.forEach {
-                            (coordinates.toHexCoordinates() distance it.toHexCoordinates()) shouldBe 1
+                            (coordinates.toHexCoordinates() distanceTo it.toHexCoordinates()) shouldBe 1
                         }
                     }
                 }
@@ -227,7 +227,7 @@ class CoordinatesTest : DescribeSpec({
                     checkAll(gen, gen) { q, r ->
                         val coordinates = HexCoordinates(q, r).toDoubleHeightCoordinates()
                         coordinates.neighbors.forEach {
-                            (coordinates.toHexCoordinates() distance it.toHexCoordinates()) shouldBe 1
+                            (coordinates.toHexCoordinates() distanceTo it.toHexCoordinates()) shouldBe 1
                         }
                     }
                 }

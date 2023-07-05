@@ -1,7 +1,5 @@
 package base
 
-import kotlin.math.abs
-
 interface Coordinates {
     object Flat {
         const val RightBottom = 0
@@ -20,17 +18,16 @@ interface Coordinates {
         const val BottomLeft = 4
         const val BottomRight = 5
     }
-}
 
-interface Distance<T : Coordinates> : Coordinates {
-    infix fun distance(other: T): Int
+    val hex: HexCoordinates
 }
-
 
 typealias AxialCoordinates = HexCoordinates
 typealias CubeCoordinates = HexCoordinates
 
-data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordinates, Distance<HexCoordinates> {
+data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordinates {
+    override val hex: HexCoordinates
+        get() = this
 
     init {
         require(q + r + s == 0) { "q + r + s must be 0" }
@@ -57,11 +54,6 @@ data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordin
     operator fun plus(other: HexCoordinates): HexCoordinates {
         return HexCoordinates(q + other.q, r + other.r)
     }
-
-    override fun distance(other: HexCoordinates): Int {
-        return (this - other).let { maxOf(abs(it.r), abs(it.q), abs(it.s)) }
-    }
-
 
     fun toEvenQCoordinates(): EvenQCoordinates {
         val col = q
@@ -121,6 +113,7 @@ data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordin
 }
 
 data class EvenQCoordinates(val col: Int, val row: Int) : Coordinates {
+    override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     operator fun get(int: Int): EvenQCoordinates {
         val (qDiff, rDiff) = directionDiffs[col and 1][int]
@@ -142,6 +135,7 @@ data class EvenQCoordinates(val col: Int, val row: Int) : Coordinates {
 }
 
 data class EvenRCoordinates(val col: Int, val row: Int) : Coordinates {
+    override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     operator fun get(int: Int): EvenRCoordinates {
         val (qDiff, rDiff) = directionDiffs[row and 1][int]
@@ -163,6 +157,7 @@ data class EvenRCoordinates(val col: Int, val row: Int) : Coordinates {
 }
 
 data class OddQCoordinates(val col: Int, val row: Int) : Coordinates {
+    override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     operator fun get(int: Int): OddQCoordinates {
         val (qDiff, rDiff) = directionDiffs[col and 1][int]
@@ -184,6 +179,7 @@ data class OddQCoordinates(val col: Int, val row: Int) : Coordinates {
 }
 
 data class OddRCoordinates(val col: Int, val row: Int) : Coordinates {
+    override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     operator fun get(int: Int): OddRCoordinates {
         val (qDiff, rDiff) = directionDiffs[row and 1][int]
@@ -205,6 +201,7 @@ data class OddRCoordinates(val col: Int, val row: Int) : Coordinates {
 }
 
 data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates {
+    override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     val neighbors by lazy { directions.map { this + it } }
 
@@ -235,6 +232,7 @@ data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates {
 }
 
 data class DoubleWidthCoordinates(val col: Int, val row: Int) : Coordinates {
+    override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     val neighbors by lazy { directions.map { this + it } }
 
