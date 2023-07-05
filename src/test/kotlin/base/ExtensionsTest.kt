@@ -3,9 +3,13 @@ package base
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
+import io.kotest.property.checkAll
 
 @DisplayName("Coordinates extension functions")
 class ExtensionsTest : DescribeSpec({
+    val gen = Arb.int(-1_000..1_000)
 
     describe("line calculation") {
         it("should calculate a line between two points") {
@@ -39,6 +43,16 @@ class ExtensionsTest : DescribeSpec({
                 HexCoordinates(1, -1).toEvenQCoordinates(),
                 HexCoordinates(2, -2).toEvenQCoordinates(),
             )
+        }
+
+        it("should be symmetric") {
+            checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
+                val start = HexCoordinates(q1, r1)
+                val end = HexCoordinates(q2, r2)
+                val line = start lineTo end
+                val line2 = end lineTo start
+                line.toSet() shouldBe line2.toSet()
+            }
         }
     }
 })
