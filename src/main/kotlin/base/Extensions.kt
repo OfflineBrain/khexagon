@@ -46,3 +46,13 @@ private fun hexRound(q: Float, r: Float): HexCoordinates {
 
     return HexCoordinates(qInt, rInt, sInt)
 }
+
+fun <T : Coordinates<T>> T.circle(radius: Int): List<T> {
+    val result = mutableListOf<T>()
+    for (q in -radius..radius) {
+        for (r in maxOf(-radius, -q - radius)..minOf(radius, -q + radius)) {
+            result.add(HexCoordinates(q, r).into())
+        }
+    }
+    return result
+}
