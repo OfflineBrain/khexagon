@@ -27,7 +27,10 @@ interface Coordinates<T> where T : Coordinates<T> {
 typealias AxialCoordinates = HexCoordinates
 typealias CubeCoordinates = HexCoordinates
 
-data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordinates<HexCoordinates> {
+data class HexCoordinates private constructor(val q: Int, val r: Int) : Coordinates<HexCoordinates> {
+    val s: Int
+        get() = -q - r
+
     override val hex: HexCoordinates
         get() = this
 
@@ -52,11 +55,11 @@ data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordin
     operator fun get(int: Int) = directions[int] + this
 
     operator fun minus(other: HexCoordinates): HexCoordinates {
-        return HexCoordinates(q - other.q, r - other.r)
+        return from(q - other.q, r - other.r)
     }
 
     operator fun plus(other: HexCoordinates): HexCoordinates {
-        return HexCoordinates(q + other.q, r + other.r)
+        return from(q + other.q, r + other.r)
     }
 
     fun toEvenQCoordinates(): EvenQCoordinates {
@@ -96,6 +99,11 @@ data class HexCoordinates(val q: Int, val r: Int, val s: Int = -q - r) : Coordin
     }
 
     companion object {
+        private val cache = mutableMapOf<Pair<Int, Int>, HexCoordinates>()
+        fun from(q: Int, r: Int): HexCoordinates {
+            return cache.getOrPut(q to r) { HexCoordinates(q, r) }
+        }
+
         val directions = listOf(
             HexCoordinates(1, 0),
             HexCoordinates(1, -1),
@@ -129,7 +137,7 @@ data class EvenQCoordinates(val col: Int, val row: Int) : Coordinates<EvenQCoord
     fun toHexCoordinates(): HexCoordinates {
         val q = col
         val r = row - (col + (col and 1)) / 2
-        return HexCoordinates(q, r)
+        return HexCoordinates.from(q, r)
     }
 
     companion object {
@@ -153,7 +161,7 @@ data class EvenRCoordinates(val col: Int, val row: Int) : Coordinates<EvenRCoord
     fun toHexCoordinates(): HexCoordinates {
         val q = col - (row + (row and 1)) / 2
         val r = row
-        return HexCoordinates(q, r)
+        return HexCoordinates.from(q, r)
     }
 
     companion object {
@@ -177,7 +185,7 @@ data class OddQCoordinates(val col: Int, val row: Int) : Coordinates<OddQCoordin
     fun toHexCoordinates(): HexCoordinates {
         val q = col
         val r = row - (col - (col and 1)) / 2
-        return HexCoordinates(q, r)
+        return HexCoordinates.from(q, r)
     }
 
     companion object {
@@ -201,7 +209,7 @@ data class OddRCoordinates(val col: Int, val row: Int) : Coordinates<OddRCoordin
     fun toHexCoordinates(): HexCoordinates {
         val q = col - (row - (row and 1)) / 2
         val r = row
-        return HexCoordinates(q, r)
+        return HexCoordinates.from(q, r)
     }
 
     companion object {
@@ -230,7 +238,7 @@ data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates<Dou
     fun toHexCoordinates(): HexCoordinates {
         val q = col
         val r = (row - col) / 2
-        return HexCoordinates(q, r)
+        return HexCoordinates.from(q, r)
     }
 
     companion object {
@@ -263,7 +271,7 @@ data class DoubleWidthCoordinates(val col: Int, val row: Int) : Coordinates<Doub
     fun toHexCoordinates(): HexCoordinates {
         val q = (col - row) / 2
         val r = row
-        return HexCoordinates(q, r)
+        return HexCoordinates.from(q, r)
     }
 
     companion object {

@@ -13,9 +13,9 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
 
     init {
         root = TrieNode(
-            coordinates = HexCoordinates(0, 0)
+            coordinates = HexCoordinates.from(0, 0)
         )
-        HexCoordinates(0, 0).circle(radius)
+        HexCoordinates.from(0, 0).circle(radius)
             .forEach { root.add(it, radius) { key, trie -> fastLoSMap.getOrPut(key) { mutableListOf() }.add(trie) } }
     }
 
@@ -91,8 +91,8 @@ data class TrieNode(
         var current = this
 
         val callback = { newQ: Int, newR: Int ->
-            val hex = HexCoordinates(newQ, newR)
-            if (hex distanceTo HexCoordinates(0, 0) <= radius) {
+            val hex = HexCoordinates.from(newQ, newR)
+            if (hex distanceTo HexCoordinates.from(0, 0) <= radius) {
                 var dq = newQ - q
                 var dr = newR - r
 
@@ -104,7 +104,7 @@ data class TrieNode(
 
                     if (current.children[key] == null) {
                         val child = TrieNode(
-                            coordinates = HexCoordinates(q, r),
+                            coordinates = HexCoordinates.from(q, r),
                             parent = current,
                         )
                         callback(losKetgen(q, r), child)
@@ -115,7 +115,7 @@ data class TrieNode(
             }
         }
 
-        bresenhamsLine(HexCoordinates(0, 0), coordinates, callback)
+        bresenhamsLine(HexCoordinates.from(0, 0), coordinates, callback)
     }
 
     fun preOrder(shouldStop: (HexCoordinates) -> Boolean) {

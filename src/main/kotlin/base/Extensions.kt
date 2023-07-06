@@ -30,7 +30,7 @@ infix fun <T : Coordinates<T>> T.lineTo(other: Coordinates<*>): List<T> {
 private fun hexRound(q: Float, r: Float): HexCoordinates {
     var qInt = round(q).toInt()
     var rInt = round(r).toInt()
-    var sInt = round(-q - r).toInt()
+    val sInt = round(-q - r).toInt()
 
     val qDiff = abs(qInt - q)
     val rDiff = abs(rInt - r)
@@ -40,18 +40,16 @@ private fun hexRound(q: Float, r: Float): HexCoordinates {
         qInt = -rInt - sInt
     } else if (rDiff > sDiff) {
         rInt = -qInt - sInt
-    } else {
-        sInt = -qInt - rInt
     }
 
-    return HexCoordinates(qInt, rInt, sInt)
+    return HexCoordinates.from(qInt, rInt)
 }
 
 fun <T : Coordinates<T>> T.circle(radius: Int): List<T> {
     val result = mutableListOf<T>()
     for (q in -radius..radius) {
         for (r in maxOf(-radius, -q - radius)..minOf(radius, -q + radius)) {
-            result.add(HexCoordinates(q, r).into())
+            result.add(HexCoordinates.from(q, r).into())
         }
     }
     return result
