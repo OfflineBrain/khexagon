@@ -1,9 +1,8 @@
 package algorythm
 
-import base.Coordinates
 import base.HexCoordinates
 import base.circle
-import base.distanceTo
+import base.distance
 
 typealias SPCVT = SymmetricPreComputedVisionTries
 
@@ -13,19 +12,35 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
 
     init {
         root = TrieNode(
-            coordinates = HexCoordinates.from(0, 0)
+            q = 0,
+            r = 0,
         )
-        HexCoordinates.from(0, 0).circle(radius)
-            .forEach { root.add(it, radius) { key, trie -> fastLoSMap.getOrPut(key) { mutableListOf() }.add(trie) } }
+        circle(
+            radius = radius,
+            callback = { q, r ->
+                root.add(q, r, radius) { key, trie -> fastLoSMap.getOrPut(key) { mutableListOf() }.add(trie) }
+            }
+        )
     }
 
     fun lineOfSight(
-        from: HexCoordinates, to: HexCoordinates, radius: Int = this.radius,
-        doesBlockVision: (HexCoordinates) -> Boolean,
+        from: HexCoordinates,
+        to: HexCoordinates,
+        radius: Int = this.radius,
+        doesBlockVision: (Int, Int) -> Boolean,
+        callback: (Int, TrieNode) -> Unit = { _, _ -> },
+    ): Boolean {
+        return lineOfSight(from.q, from.r, to.q, to.r, radius, doesBlockVision, callback)
+    }
+
+    fun lineOfSight(
+        fromQ: Int, fromR: Int, toQ: Int, toR: Int, radius: Int = this.radius,
+        doesBlockVision: (Int, Int) -> Boolean,
         callback: (Int, TrieNode) -> Unit = { _, _ -> }
     ): Boolean {
-        val distance = from distanceTo to
-        val diff = to - from
+        val distance = distance(fromQ, fromR, toQ, toR)
+        val diffQ = toQ - fromQ
+        val diffR = toR - fromR
 
         if (distance > radius) {
             return false
@@ -34,11 +49,11 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
         fun losKetgen(x: Int, y: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
         var trace: TrieNode? = null
-        for (it in fastLoSMap[losKetgen(diff.q, diff.r)] ?: emptyList()) {
+        for (it in fastLoSMap[losKetgen(diffQ, diffR)] ?: emptyList()) {
             trace = it
             var cur: TrieNode? = trace
             while (cur != null) {
-                if (doesBlockVision(cur.coordinates)) {
+                if (doesBlockVision(cur.q, cur.r)) {
                     trace = null
                     break
                 }
@@ -52,7 +67,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
         if (callback != { _: Int, _: TrieNode -> }) {
             var cur: TrieNode? = trace
             while (cur != null) {
-                callback(losKetgen(cur.coordinates.q, cur.coordinates.r), cur)
+                callback(losKetgen(cur.q, cur.r), cur)
                 cur = cur.parent
             }
         }
@@ -61,15 +76,22 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
 
     fun fieldOfView(
         from: HexCoordinates,
-        doesBlockVision: (HexCoordinates) -> Boolean,
-        callback: (Int, HexCoordinates) -> Unit = { _, _ -> }
+        doesBlockVision: (Int, Int) -> Boolean,
+        callback: (Int, Int) -> Unit = { _, _ -> }
+    ) = fieldOfView(from.q, from.r, doesBlockVision, callback)
+
+    fun fieldOfView(
+        fromQ: Int, fromR: Int,
+        doesBlockVision: (Int, Int) -> Boolean,
+        callback: (Int, Int) -> Unit = { _, _ -> }
     ) {
-        fun run(hex: HexCoordinates): Boolean {
-            val current = hex + from
-            if (doesBlockVision(current)) {
+        fun run(q: Int, r: Int): Boolean {
+            val currentQ = q + fromQ
+            val currentR = r + fromR
+            if (doesBlockVision(currentQ, currentR)) {
                 return true
             }
-            callback(0, current)
+            callback(currentQ, currentR)
             return false
         }
 
@@ -80,21 +102,25 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
 data class TrieNode(
     val parent: TrieNode? = null,
     val children: MutableMap<Int, TrieNode> = mutableMapOf(),
-    val coordinates: HexCoordinates
+    val q: Int,
+    val r: Int,
 ) {
 
-    fun add(coordinates: HexCoordinates, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) {
+    fun add(coordinates: HexCoordinates, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) =
+        add(coordinates.q, coordinates.r, radius, callback)
+
+    fun add(Q: Int, R: Int, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) {
         fun losKetgen(x: Int, y: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
-        var q = coordinates.q
-        var r = coordinates.r
+        var q = Q
+        var r = R
         var current = this
 
-        val callback = { newQ: Int, newR: Int ->
-            val hex = HexCoordinates.from(newQ, newR)
-            if (hex distanceTo HexCoordinates.from(0, 0) <= radius) {
-                var dq = newQ - q
-                var dr = newR - r
+        val cb = { newQ: Int, newR: Int ->
+
+            if (distance(newQ, newR, 0, 0) <= radius) {
+                val dq = newQ - q
+                val dr = newR - r
 
                 if (!(dq == 0 && dr == 0)) {
                     q = newQ
@@ -104,7 +130,8 @@ data class TrieNode(
 
                     if (current.children[key] == null) {
                         val child = TrieNode(
-                            coordinates = HexCoordinates.from(q, r),
+                            q = q,
+                            r = r,
                             parent = current,
                         )
                         callback(losKetgen(q, r), child)
@@ -115,30 +142,34 @@ data class TrieNode(
             }
         }
 
-        bresenhamsLine(HexCoordinates.from(0, 0), coordinates, callback)
+        bresenhamsLine(0, 0, Q, R, cb)
     }
 
-    fun preOrder(shouldStop: (HexCoordinates) -> Boolean) {
-        if (shouldStop(coordinates.hex)) {
+    fun preOrder(shouldStop: (Int, Int) -> Boolean) {
+        if (shouldStop(q, r)) {
             return
         }
         children.values.forEach { it.preOrder(shouldStop) }
     }
 }
 
-fun bresenhamsLine(start: Coordinates<*>, end: Coordinates<*>, process: (x: Int, y: Int) -> Unit) {
-    fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
-    process(start.hex.q, start.hex.r)
+private fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
 
-    val (dq, sq) = diff(start.hex.q, end.hex.q)
-    val (dr, sr) = diff(start.hex.r, end.hex.r)
-    val (ds, ss) = diff(start.hex.s, end.hex.s)
+fun bresenhamsLine(start: HexCoordinates, end: HexCoordinates, process: (x: Int, y: Int) -> Unit) =
+    bresenhamsLine(start.q, start.r, end.q, end.r, process)
+
+fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: Int, y: Int) -> Unit) {
+    process(startQ, startR)
+
+    val (dq, sq) = diff(startQ, endQ)
+    val (dr, sr) = diff(startR, endR)
+    val (ds, ss) = diff(-startQ - startR, -endQ - endR)
 
     var test = if (sr == -1) -1 else 0
 
-    var q = start.hex.q
-    var r = start.hex.r
-    var s = start.hex.s
+    var q = startQ
+    var r = startR
+    var s = -startQ - startR
 
     if (dq >= dr && dq >= ds) {
         test = (dq + test) shr 1

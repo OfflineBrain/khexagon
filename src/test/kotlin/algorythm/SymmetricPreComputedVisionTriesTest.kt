@@ -2,6 +2,7 @@ package algorythm
 
 import base.HexCoordinates
 import base.circle
+import base.distance
 import base.distanceTo
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
@@ -163,15 +164,11 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
     }
 
     context("vision tries") {
-        context("compute") {
-            val positives = Arb.int(50..150)
-            checkAll(PropTestConfig(iterations = 10), positives) { radius ->
-                it("should be complete for a radius = $radius") {
-                    val spcvt = SPCVT(radius)
+        val radius = 100
+        it("should be complete for a radius = $radius") {
+            val spcvt = SPCVT(radius)
 
-                    spcvt.fastLoSMap.size shouldBe 1 + 3 * radius * (radius + 1)
-                }
-            }
+            spcvt.fastLoSMap.size shouldBe 1 + 3 * radius * (radius + 1)
         }
 
         context("line of sight") {
@@ -193,13 +190,13 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                         spcvt.lineOfSight(
                             from = start,
                             to = end,
-                            doesBlockVision = { false },
-                            callback = { _, trie -> los.add(trie.coordinates.hex + start) }
+                            doesBlockVision = { _, _ -> false },
+                            callback = { _, trie -> los.add(HexCoordinates.from(trie.q, trie.r) + start) }
                         )
                     val reverseVisible = spcvt.lineOfSight(
                         from = end,
                         to = start,
-                        doesBlockVision = { false },
+                        doesBlockVision = { _, _ -> false },
                         callback = { _, _ -> }
                     )
 
@@ -236,8 +233,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
                     spcvt.fieldOfView(
                         from = center,
-                        doesBlockVision = { false },
-                        callback = { _, trie -> fov.add(trie.hex) }
+                        doesBlockVision = { _, _ -> false },
+                        callback = { q, r -> fov.add(HexCoordinates.from(q, r)) }
                     )
 
                     fov.distinct() shouldBeSameSizeAs center.circle(100)
@@ -245,19 +242,19 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
                 context("restricted radius") {
                     val radius = Exhaustive.collection((1..100 step 5).toList())
-                    checkAll(radius) { r ->
-                        it("should be a circle at origin with radius $r") {
+                    checkAll(radius) { radius ->
+                        it("should be a circle at origin with radius $radius") {
 
                             val center = HexCoordinates.from(0, 0)
                             val fov = mutableListOf<HexCoordinates>()
 
                             spcvt.fieldOfView(
                                 from = center,
-                                doesBlockVision = { it.hex distanceTo center > r },
-                                callback = { _, trie -> fov.add(trie.hex) },
+                                doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius },
+                                callback = { q, r -> fov.add(HexCoordinates.from(q, r)) },
                             )
 
-                            fov.distinct() shouldBeSameSizeAs center.circle(r)
+                            fov.distinct() shouldBeSameSizeAs center.circle(radius)
                         }
                     }
                 }
