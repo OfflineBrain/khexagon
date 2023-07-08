@@ -78,6 +78,19 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
     fun fieldOfView(
         from: HexCoordinates,
         doesBlockVision: (Int, Int) -> Boolean,
+    ): Set<HexCoordinates> {
+        val result = mutableSetOf<HexCoordinates>()
+
+        fieldOfView(from, doesBlockVision) { q, r ->
+            result.add(HexCoordinates.from(q, r))
+        }
+
+        return result
+    }
+
+    fun fieldOfView(
+        from: HexCoordinates,
+        doesBlockVision: (Int, Int) -> Boolean,
         callback: (Int, Int) -> Unit = { _, _ -> }
     ) = fieldOfView(from.q, from.r, doesBlockVision, callback)
 
@@ -95,6 +108,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
             callback(currentQ, currentR)
             return false
         }
+
 
         root.preOrder(::run)
     }

@@ -8,7 +8,6 @@ import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
@@ -257,6 +256,24 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                             println("fov: ${fov.size}, distinct: ${fov.distinct().size}")
 
                             fov.distinct() shouldBeSameSizeAs center.circle(radius)
+                        }
+                    }
+                }
+
+                describe("restricted radius without callback") {
+                    val radius = Exhaustive.collection((1..100 step 5).toList())
+                    checkAll(radius) { radius ->
+                        it("should be a circle at origin with radius $radius") {
+
+                            val center = HexCoordinates.from(0, 0)
+
+                            val fov = spcvt.fieldOfView(
+                                from = center,
+                                doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius }
+                            )
+
+
+                            fov shouldBeSameSizeAs center.circle(radius)
                         }
                     }
                 }
