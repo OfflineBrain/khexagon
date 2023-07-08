@@ -6,6 +6,8 @@ import base.distance
 
 typealias SPCVT = SymmetricPreComputedVisionTries
 
+fun losKeygen(x: Int, y: Int, radius: Int) = radius + x + (2 * radius + 1) * (y + radius)
+
 class SymmetricPreComputedVisionTries(private val radius: Int) {
     val root: TrieNode
     val fastLoSMap: MutableMap<Int, MutableList<TrieNode>> = mutableMapOf()
@@ -46,10 +48,9 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
             return false
         }
 
-        fun losKetgen(x: Int, y: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
         var trace: TrieNode? = null
-        for (it in fastLoSMap[losKetgen(diffQ, diffR)] ?: emptyList()) {
+        for (it in fastLoSMap[losKeygen(diffQ, diffR, radius)] ?: emptyList()) {
             trace = it
             var cur: TrieNode? = trace
             while (cur != null) {
@@ -67,7 +68,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
         if (callback != { _: Int, _: TrieNode -> }) {
             var cur: TrieNode? = trace
             while (cur != null) {
-                callback(losKetgen(cur.q, cur.r), cur)
+                callback(losKeygen(cur.q, cur.r, radius), cur)
                 cur = cur.parent
             }
         }
@@ -101,10 +102,11 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
 
 data class TrieNode(
     val parent: TrieNode? = null,
-    val children: MutableMap<Int, TrieNode> = mutableMapOf(),
     val q: Int,
     val r: Int,
+    val childrenIndices: MutableList<Int?> = MutableList(10) { null },
 ) {
+    private val childrenNodes: MutableList<TrieNode> = mutableListOf()
 
     fun add(coordinates: HexCoordinates, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) =
         add(coordinates.q, coordinates.r, radius, callback)
@@ -112,8 +114,8 @@ data class TrieNode(
     fun add(Q: Int, R: Int, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) {
         fun losKetgen(x: Int, y: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
-        var q = Q
-        var r = R
+        var q = q
+        var r = r
         var current = this
 
         val cb = { newQ: Int, newR: Int ->
@@ -128,16 +130,23 @@ data class TrieNode(
 
                     val key = dq + 1 + (dr + 1) * 3
 
-                    if (current.children[key] == null) {
+                    if (key < 0 || key > 8) {
+                        println("key: $key, dq: $dq, dr: $dr")
+                    }
+
+                    var index = current.childrenIndices[key]
+                    if (index == null) {
                         val child = TrieNode(
                             q = q,
                             r = r,
                             parent = current,
                         )
                         callback(losKetgen(q, r), child)
-                        current.children[key] = child
+                        current.childrenNodes.add(child)
+                        index = current.childrenNodes.lastIndex
+                        current.childrenIndices[key] = index
                     }
-                    current = current.children[key]!!
+                    current = current.childrenNodes[index]
                 }
             }
         }
@@ -149,7 +158,7 @@ data class TrieNode(
         if (shouldStop(q, r)) {
             return
         }
-        children.values.forEach { it.preOrder(shouldStop) }
+        childrenNodes.forEach { it.preOrder(shouldStop) }
     }
 }
 

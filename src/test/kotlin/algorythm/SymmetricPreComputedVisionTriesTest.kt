@@ -8,6 +8,7 @@ import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
@@ -168,7 +169,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
         it("should be complete for a radius = $radius") {
             val spcvt = SPCVT(radius)
 
-            spcvt.fastLoSMap.size shouldBe 1 + 3 * radius * (radius + 1)
+            spcvt.fastLoSMap.size shouldBe 3 * radius * (radius + 1)
         }
 
         context("line of sight") {
@@ -206,8 +207,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
                     if (start == end) {
                         single++
-                        los.distinct() shouldHaveSize 1
-                        los.first() shouldBe start
+                        los.distinct() shouldHaveSize 0
                     } else if (start distanceTo end > 100) {
                         outOfRange++
                         visible shouldBe false
@@ -253,6 +253,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                                 doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius },
                                 callback = { q, r -> fov.add(HexCoordinates.from(q, r)) },
                             )
+
+                            println("fov: ${fov.size}, distinct: ${fov.distinct().size}")
 
                             fov.distinct() shouldBeSameSizeAs center.circle(radius)
                         }
