@@ -77,7 +77,6 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 val end = HexCoordinates.from(q, r)
                 val line = mutableListOf<HexCoordinates>()
                 bresenhamsLine(start, end) { x, y ->
-                    println("$x : $y : ${-x - y}")
                     line.add(HexCoordinates.from(x, y))
                 }
                 val reversedLine = mutableListOf<HexCoordinates>()
@@ -90,19 +89,6 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     line shouldHaveSize 3
                     line shouldBe reversedLine.reversed()
                 }
-            }
-        }
-
-        checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-            val start = HexCoordinates.from(q1, r1)
-            val end = HexCoordinates.from(q2, r2)
-            val line = mutableListOf<HexCoordinates>()
-            bresenhamsLine(start, end) { x, y ->
-                line.add(HexCoordinates.from(x, y))
-            }
-            val reversedLine = mutableListOf<HexCoordinates>()
-            bresenhamsLine(end, start) { x, y ->
-                reversedLine.add(HexCoordinates.from(x, y))
             }
         }
 
@@ -181,7 +167,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 var outOfRange = 0
                 var complete = 0
 
-                val attempts = checkAll(PropTestConfig(iterations = 10_000), nums, nums, nums, nums) { q1, r1, q2, r2 ->
+                checkAll(PropTestConfig(iterations = 10_000), nums, nums, nums, nums) { q1, r1, q2, r2 ->
                     val start = HexCoordinates.from(q1, r1)
                     val end = HexCoordinates.from(q2, r2)
 
@@ -214,10 +200,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                         complete++
                         los.distinct() shouldHaveSize ((start distanceTo end) + 1)
                     }
-                }.attempts()
-
-                println("attempts: $attempts")
-                println("stats: single: $single, outOfRange: $outOfRange, complete: $complete")
+                }
             }
         }
 
