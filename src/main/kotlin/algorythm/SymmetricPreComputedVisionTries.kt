@@ -30,7 +30,22 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
         to: HexCoordinates,
         radius: Int = this.radius,
         doesBlockVision: (Int, Int) -> Boolean,
-        callback: (Int, TrieNode) -> Unit = { _, _ -> },
+    ): Set<HexCoordinates> {
+        val result = mutableSetOf<HexCoordinates>()
+
+        lineOfSight(from, to, radius, doesBlockVision) { _, trie ->
+            result.add(HexCoordinates.from(trie.q, trie.r))
+        }
+
+        return result
+    }
+
+    fun lineOfSight(
+        from: HexCoordinates,
+        to: HexCoordinates,
+        radius: Int = this.radius,
+        doesBlockVision: (Int, Int) -> Boolean,
+        callback: (Int, TrieNode) -> Unit,
     ): Boolean {
         return lineOfSight(from.q, from.r, to.q, to.r, radius, doesBlockVision, callback)
     }
@@ -38,7 +53,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
     fun lineOfSight(
         fromQ: Int, fromR: Int, toQ: Int, toR: Int, radius: Int = this.radius,
         doesBlockVision: (Int, Int) -> Boolean,
-        callback: (Int, TrieNode) -> Unit = { _, _ -> }
+        callback: (Int, TrieNode) -> Unit
     ): Boolean {
         val distance = distance(fromQ, fromR, toQ, toR)
         val diffQ = toQ - fromQ
@@ -91,7 +106,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
     fun fieldOfView(
         from: HexCoordinates,
         doesBlockVision: (Int, Int) -> Boolean,
-        callback: (Int, Int) -> Unit = { _, _ -> }
+        callback: (Int, Int) -> Unit
     ) = fieldOfView(from.q, from.r, doesBlockVision, callback)
 
     fun fieldOfView(
