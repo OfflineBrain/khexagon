@@ -2,9 +2,10 @@ package algorythm
 
 import Heavy
 import base.coordinates.HexCoordinates
+import base.math.bresenhamsLine
 import base.math.circle
 import base.math.distance
-import base.distanceTo
+import base.math.distanceTo
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.IsolationMode
@@ -37,10 +38,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     checkAll(gen) { r ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(0, r)
-                        val line = mutableListOf<HexCoordinates>()
-                        bresenhamsLine(start, end) { x, y ->
-                            line.add(HexCoordinates.from(x, y))
-                        }
+                        val line = start.bresenhamsLine(end)
+
                         line shouldBe List(r.absoluteValue + 1) { HexCoordinates.from(0, it * r.sign) }
                     }
                 }
@@ -51,10 +50,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     checkAll(gen) { q ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(q, 0)
-                        val line = mutableListOf<HexCoordinates>()
-                        bresenhamsLine(start, end) { x, y ->
-                            line.add(HexCoordinates.from(x, y))
-                        }
+                        val line = start.bresenhamsLine(end)
+
                         line shouldBe List(q.absoluteValue + 1) { HexCoordinates.from(it * q.sign, 0) }
                     }
                 }
@@ -65,10 +62,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     checkAll(gen) { q ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(q, -q)
-                        val line = mutableListOf<HexCoordinates>()
-                        bresenhamsLine(start, end) { x, y ->
-                            line.add(HexCoordinates.from(x, y))
-                        }
+                        val line = start.bresenhamsLine(end)
+
                         line shouldBe List(q.absoluteValue + 1) { HexCoordinates.from(it * q.sign, -(it * q.sign)) }
                     }
                 }
@@ -81,14 +76,9 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             checkAll(diagonals) { (q, r) ->
                 val start = HexCoordinates.from(0, 0)
                 val end = HexCoordinates.from(q, r)
-                val line = mutableListOf<HexCoordinates>()
-                bresenhamsLine(start, end) { x, y ->
-                    line.add(HexCoordinates.from(x, y))
-                }
-                val reversedLine = mutableListOf<HexCoordinates>()
-                bresenhamsLine(end, start) { x, y ->
-                    reversedLine.add(HexCoordinates.from(x, y))
-                }
+                val line = start.bresenhamsLine(end)
+
+                val reversedLine = end.bresenhamsLine(start)
                 println()
                 it("${HexCoordinates.from(q, r)} should construct line in order") {
                     line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
@@ -102,14 +92,9 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
-                val line = mutableListOf<HexCoordinates>()
-                bresenhamsLine(start, end) { x, y ->
-                    line.add(HexCoordinates.from(x, y))
-                }
-                val reversedLine = mutableListOf<HexCoordinates>()
-                bresenhamsLine(end, start) { x, y ->
-                    reversedLine.add(HexCoordinates.from(x, y))
-                }
+                val line = start.bresenhamsLine(end)
+
+                val reversedLine = end.bresenhamsLine(start)
 
                 line shouldBe reversedLine.reversed()
             }
@@ -119,10 +104,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
-                val line = mutableListOf<HexCoordinates>()
-                bresenhamsLine(start, end) { x, y ->
-                    line.add(HexCoordinates.from(x, y))
-                }
+                val line = start.bresenhamsLine(end)
+
 
                 line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
             }
@@ -132,10 +115,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
-                val line = mutableListOf<HexCoordinates>()
-                bresenhamsLine(start, end) { x, y ->
-                    line.add(HexCoordinates.from(x, y))
-                }
+                val line = start.bresenhamsLine(end)
 
                 line should { l -> l.contains(start) && l.contains(end) }
             }
@@ -145,10 +125,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
-                val line = mutableListOf<HexCoordinates>()
-                bresenhamsLine(start, end) { x, y ->
-                    line.add(HexCoordinates.from(x, y))
-                }
+                val line = start.bresenhamsLine(end)
 
                 line.toSet().size shouldBe line.size
             }

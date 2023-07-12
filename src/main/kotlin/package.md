@@ -47,3 +47,21 @@ package are:
 Both classes enforce the constraint `(col + row) % 2 == 0`.
 
 # Package base.math
+
+The package contains utility functions and classes that aid in performing various mathematical operations
+specific to the program's focus on coordinates and shapes in a hexagonal grid. Here's an abstract overview of the
+package:
+
+- **Bresenham's Line Algorithm Functions**: These functions, named `bresenhamsLine`, implement the Bresenham's line
+  generation algorithm. They can produce a symmetric line of coordinates between two points on a hexagonal grid.
+
+- **Line Drawing Functions**: The package includes functions like `T.lineTo` that use the Bresenham's line algorithm to
+  draw lines between two given coordinates on a hexagonal grid.
+
+- **Distance Calculation Functions**: Functions such as `T.distanceTo` and the standalone `distance` function are used
+  to calculate the distance between two given coordinates on a hexagonal grid.
+
+- **Hexagonal Shape Functions**: The package also contains functions like `T.circle` and `T.ring` to generate a circular
+  or ring-like arrangement of coordinates around a given point on a hexagonal grid.
+
+Please refer to individual function documentation for more detailed explanations and examples of usage.

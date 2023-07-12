@@ -2,6 +2,7 @@ package base
 
 import base.coordinates.Coordinates
 import base.coordinates.HexCoordinates
+import base.math.distanceTo
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe

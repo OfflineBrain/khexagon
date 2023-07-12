@@ -1,10 +1,7 @@
-package base
+package base.math
 
 import base.coordinates.Coordinates
 import base.coordinates.HexCoordinates
-import base.math.distance
-import base.math.hexRound
-import base.math.bresenhamsLine
 
 /**
  * Calculates the hexagonal distance from this coordinate to another.
