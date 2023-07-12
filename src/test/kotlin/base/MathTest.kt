@@ -1,5 +1,7 @@
 package base
 
+import base.math.flatHexHeight
+import base.math.flatHexWidth
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe

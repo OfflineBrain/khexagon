@@ -1,9 +1,9 @@
 package algorythm
 
 import Heavy
-import base.HexCoordinates
-import base.circle
-import base.distance
+import base.coordinates.HexCoordinates
+import base.math.circle
+import base.math.distance
 import base.distanceTo
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.annotation.DisplayName

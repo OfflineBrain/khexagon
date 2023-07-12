@@ -1,5 +1,6 @@
 package base
 
+import base.coordinates.HexCoordinates
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe

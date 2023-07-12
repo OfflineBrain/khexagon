@@ -66,11 +66,11 @@ tasks.dokkaHtml {
             moduleName.set("KHexagon")
             skipEmptyPackages.set(true)
 
-            includes.from("src/main/kotlin/coordinates.md")
+            includes.from("src/main/kotlin/package.md")
 
             sourceLink {
                 localDirectory.set(file("src/main/kotlin"))
-                remoteUrl.set(URL("https://github.com/OfflineBrain/third-hex-a-charm/tree/master/src/main/kotlin"))
+                remoteUrl.set(URL("https://github.com/OfflineBrain/khexagon/tree/master/src/main/kotlin"))
                 remoteLineSuffix.set("#L")
             }
         }

@@ -1,8 +1,9 @@
 package algorythm
 
-import base.HexCoordinates
-import base.circle
-import base.distance
+import base.coordinates.HexCoordinates
+import base.math.bresenhamsLine
+import base.math.circle
+import base.math.distance
 
 typealias SPCVT = SymmetricPreComputedVisionTries
 
@@ -188,63 +189,5 @@ data class TrieNode(
             return
         }
         childrenNodes.forEach { it.preOrder(shouldStop) }
-    }
-}
-
-private fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
-
-fun bresenhamsLine(start: HexCoordinates, end: HexCoordinates, process: (x: Int, y: Int) -> Unit) =
-    bresenhamsLine(start.q, start.r, end.q, end.r, process)
-
-fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: Int, y: Int) -> Unit) {
-    process(startQ, startR)
-
-    val (dq, sq) = diff(startQ, endQ)
-    val (dr, sr) = diff(startR, endR)
-    val (ds, ss) = diff(-startQ - startR, -endQ - endR)
-
-    var test = if (sr == -1) -1 else 0
-
-    var q = startQ
-    var r = startR
-    var s = -startQ - startR
-
-    if (dq >= dr && dq >= ds) {
-        test = (dq + test) shr 1
-
-        for (i in 0 until dq) {
-            test -= dr
-            q += sq
-            if (test < 0) {
-                r += sr
-                test += dq
-            }
-            process(q, r)
-        }
-    } else if (ds >= dr) {
-        test = (ds + test) shr 1
-
-        for (i in 0 until ds) {
-            test -= dr
-            s += ss
-            if (test < 0) {
-                r += sr
-                test += ds
-            }
-            q = -s - r
-            process(q, r)
-        }
-    } else {
-        test = (dr + test) shr 1
-
-        for (i in 0 until dr) {
-            test -= dq
-            r += sr
-            if (test < 0) {
-                q += sq
-                test += dr
-            }
-            process(q, r)
-        }
     }
 }

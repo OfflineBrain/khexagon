@@ -1,3 +1,3 @@
 
-rootProject.name = "third-hex-a-charm"
+rootProject.name = "khexagon"
 
