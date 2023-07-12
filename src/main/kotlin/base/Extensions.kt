@@ -1,8 +1,5 @@
 package base
 
-import kotlin.math.abs
-import kotlin.math.round
-
 infix fun <T : Coordinates<T>> T.distanceTo(other: Coordinates<*>): Int {
     val left = this.hex
     val right = other.hex
@@ -21,24 +18,6 @@ infix fun <T : Coordinates<T>> T.lineTo(other: Coordinates<*>): List<T> {
         result.add(hexRound(q, r).into())
     }
     return result
-}
-
-private fun hexRound(q: Float, r: Float): HexCoordinates {
-    var qInt = round(q).toInt()
-    var rInt = round(r).toInt()
-    val sInt = round(-q - r).toInt()
-
-    val qDiff = abs(qInt - q)
-    val rDiff = abs(rInt - r)
-    val sDiff = abs(sInt - (-q - r))
-
-    if (qDiff > rDiff && qDiff > sDiff) {
-        qInt = -rInt - sInt
-    } else if (rDiff > sDiff) {
-        rInt = -qInt - sInt
-    }
-
-    return HexCoordinates.from(qInt, rInt)
 }
 
 fun <T : Coordinates<T>> T.circle(radius: Int): List<T> {

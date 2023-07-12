@@ -1,6 +1,10 @@
+import java.net.URL
+
 plugins {
     kotlin("jvm") version "1.8.21"
-    application
+    id("org.jetbrains.dokka") version "1.8.20"
+    `java-library`
+    `maven-publish`
 }
 
 group = "com.offlinebrain"
@@ -8,6 +12,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 val kotestVersion = "5.6.2"
@@ -22,12 +27,52 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+
+    systemProperties(System.getProperties().mapKeys { it.key as String })
 }
 
 kotlin {
     jvmToolchain(17)
 }
 
-application {
-    mainClass.set("MainKt")
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+}
+
+tasks.register<Jar>("dokkaHtmlJar") {
+    dependsOn(tasks.dokkaHtml)
+    from(tasks.dokkaHtml.flatMap { it.outputDirectory })
+    archiveClassifier.set("html-docs")
+}
+
+tasks.register<Jar>("dokkaJavadocJar") {
+    dependsOn(tasks.dokkaJavadoc)
+    from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
+    archiveClassifier.set("javadoc")
+}
+
+tasks.dokkaHtml {
+    dokkaSourceSets {
+        named("main") {
+            moduleName.set("KHexagon")
+            skipEmptyPackages.set(true)
+
+            includes.from("src/main/kotlin/coordinates.md")
+
+            sourceLink {
+                localDirectory.set(file("src/main/kotlin"))
+                remoteUrl.set(URL("https://github.com/OfflineBrain/third-hex-a-charm/tree/master/src/main/kotlin"))
+                remoteLineSuffix.set("#L")
+            }
+        }
+    }
 }
