@@ -22,8 +22,6 @@ jobs:
       - name: "Build"
         run: ./gradlew build -Dkotest.tags="!Heavy"
 
-      - name: "Documentation"
-        run: ./gradlew dokkaHtml -Dkotest.tags="!Heavy"
 
   deploy:
     needs: build
@@ -35,6 +33,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
+
+      - name: "Assemble Docs"
+        run: ./gradlew dokkaHtml -Dkotest.tags="!Heavy"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
