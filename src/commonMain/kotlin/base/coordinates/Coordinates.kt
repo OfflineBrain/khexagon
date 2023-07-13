@@ -1,8 +1,31 @@
 package base.coordinates
 
-import base.coordinates.offset.*
-import base.coordinates.doubled.*
+import base.coordinates.Coordinates.Flat
+import base.coordinates.Coordinates.Pointy
+import base.coordinates.doubled.DoubleHeightCoordinates
+import base.coordinates.doubled.DoubleWidthCoordinates
+import base.coordinates.offset.EvenQCoordinates
+import base.coordinates.offset.EvenRCoordinates
+import base.coordinates.offset.OddQCoordinates
+import base.coordinates.offset.OddRCoordinates
 
+
+/**
+ * Interface representing a point in a hexagonal grid using an axial coordinate system (q, r).
+ *
+ * The [AxisPoint] interface represents a point in a hexagonal grid, accounting for both column (q) and row (r) positions.
+ *
+ * This interface is particularly useful in scenarios where you need to work with points on a hexagonal grid system,
+ * but you don't want to enforce the embedding or implementation of the [Coordinates] interface in your classes.
+ * By representing the coordinates as simple integers, this interface provides a lightweight, straightforward way to include hexagonal grid coordinates in any class.
+ *
+ * @property q The column coordinate of the point on the hexagonal grid.
+ * @property r The row coordinate of the point on the hexagonal grid.
+ */
+interface AxisPoint {
+    val q: Int
+    val r: Int
+}
 
 /**
  * The [Coordinates] interface is a generic contract for types which extend or implement
@@ -17,7 +40,7 @@ import base.coordinates.doubled.*
  *
  * @param T This represents the type of the Coordinates, which is a subtype of [Coordinates] itself.
  */
-interface Coordinates<T> where T : Coordinates<T> {
+interface Coordinates<T> : AxisPoint where T : Coordinates<T> {
 
     /**
      * Enumeration of direction constants for Flat-top hexagonal layout.
@@ -46,7 +69,25 @@ interface Coordinates<T> where T : Coordinates<T> {
     }
 
     val hex: HexCoordinates
+    override val q: Int
+        get() = hex.q
+    override val r: Int
+        get() = hex.r
+}
 
+/**
+ *  This interface provides a single method to transform instances of [HexCoordinates] into an arbitrary,
+ *  but specific, subtype of [Coordinates]. This is particularly useful when functions
+ * generate new values inside a specific coordinate system and these need to be represented,
+ * or 'converted', into another domain-specific coordinate system.
+ *
+ * This contract makes no assumptions about the semantics of the involved transformations and,
+ * as such, accommodates for multiple, diverse implementations based on the specific needs of the [HexCoordinates]
+ * and the target coordinates subtype.
+ *
+ * @param T The target subtype of Coordinates into which HexCoordinates should be transformed.
+ */
+interface FromHexCoordinates<T> where T : Coordinates<T> {
     /**
      * Transforms the given [this] from [HexCoordinates] into the corresponding subtype of [Coordinates].
      *
@@ -66,7 +107,8 @@ typealias CubeCoordinates = HexCoordinates
  *  A data class representing a point in a hexagonal grid using cube coordinates (q, r, s).
  * The [s] coordinate is calculated based on [q] and [r] as `-q - r`.
  */
-class HexCoordinates private constructor(val q: Int, val r: Int) : Coordinates<HexCoordinates> {
+class HexCoordinates private constructor(override val q: Int, override val r: Int) : Coordinates<HexCoordinates>,
+    FromHexCoordinates<HexCoordinates> {
     val s: Int
         get() = -q - r
 

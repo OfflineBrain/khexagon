@@ -1,7 +1,6 @@
 package base.math
 
-import base.coordinates.Coordinates
-import base.coordinates.HexCoordinates
+import base.coordinates.*
 
 /**
  * Calculates the hexagonal distance from this coordinate to another.
@@ -11,10 +10,8 @@ import base.coordinates.HexCoordinates
  *
  * @see [base.math.distance]
  */
-infix fun <T : Coordinates<T>> T.distanceTo(other: Coordinates<*>): Int {
-    val left = this.hex
-    val right = other.hex
-    return distance(left.q, left.r, right.q, right.r)
+infix fun <T : AxisPoint> T.distanceTo(other: AxisPoint): Int {
+    return distance(this.q, this.r, other.q, other.r)
 }
 
 
@@ -24,7 +21,8 @@ infix fun <T : Coordinates<T>> T.distanceTo(other: Coordinates<*>): Int {
  * @param other The destination coordinate.
  * @return A list of coordinates marking a path between the two points.
  */
-infix fun <T : Coordinates<T>> T.lineTo(other: Coordinates<*>): List<T> {
+infix fun <T> T.lineTo(other: Coordinates<*>): List<T>
+        where T : Coordinates<T>, T : FromHexCoordinates<T> {
     val left = this.hex
     val right = other.hex
     val distance = this distanceTo other
@@ -48,11 +46,10 @@ infix fun <T : Coordinates<T>> T.lineTo(other: Coordinates<*>): List<T> {
  *
  * @see [base.math.bresenhamsLine]
  */
-infix fun <T : Coordinates<T>> T.bresenhamsLine(end: Coordinates<*>): List<T> {
-    val left = this.hex
-    val right = end.hex
+infix fun <T> T.bresenhamsLine(end: AxisPoint): List<T>
+        where T : AxisPoint, T : FromHexCoordinates<T> {
     val line = mutableListOf<T>()
-    bresenhamsLine(left.q, left.r, right.q, right.r) { q, r ->
+    bresenhamsLine(this.q, this.r, end.q, end.r) { q, r ->
         line.add(HexCoordinates(q, r).into())
     }
     return line
@@ -67,11 +64,12 @@ infix fun <T : Coordinates<T>> T.bresenhamsLine(end: Coordinates<*>): List<T> {
  *
  * @see [base.math.circle]
  */
-fun <T : Coordinates<T>> T.circle(radius: Int): List<T> {
+fun <T> T.circle(radius: Int): List<T>
+        where T : AxisPoint, T : FromHexCoordinates<T> {
     val result = mutableListOf<T>()
     for (q in -radius..radius) {
         for (r in maxOf(-radius, -q - radius)..minOf(radius, -q + radius)) {
-            result.add(HexCoordinates.from(q, r).into())
+            result.add(HexCoordinates.from(q + this.q, r + this.r).into())
         }
     }
     return result

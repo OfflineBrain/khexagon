@@ -1,6 +1,7 @@
 package base.coordinates.doubled
 
 import base.coordinates.Coordinates
+import base.coordinates.FromHexCoordinates
 import base.coordinates.HexCoordinates
 
 
@@ -13,7 +14,8 @@ import base.coordinates.HexCoordinates
  * @property col Column of the coordinate.
  * @property row Row of the coordinate.
  */
-data class DoubleWidthCoordinates(val col: Int, val row: Int) : Coordinates<DoubleWidthCoordinates> {
+data class DoubleWidthCoordinates(val col: Int, val row: Int) : Coordinates<DoubleWidthCoordinates>,
+    FromHexCoordinates<DoubleWidthCoordinates> {
     override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     override fun HexCoordinates.into(): DoubleWidthCoordinates = toDoubleWidthCoordinates()
@@ -56,7 +58,8 @@ data class DoubleWidthCoordinates(val col: Int, val row: Int) : Coordinates<Doub
  * @property col Column of the coordinate.
  * @property row Row of the coordinate.
  */
-data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates<DoubleHeightCoordinates> {
+data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates<DoubleHeightCoordinates>,
+    FromHexCoordinates<DoubleHeightCoordinates> {
     override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
     override fun HexCoordinates.into(): DoubleHeightCoordinates = toDoubleHeightCoordinates()
