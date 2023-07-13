@@ -3,7 +3,6 @@ import java.net.URL
 plugins {
     kotlin("jvm") version "1.8.21"
     id("org.jetbrains.dokka") version "1.8.20"
-    `java-library`
     `maven-publish`
 }
 
@@ -37,12 +36,12 @@ kotlin {
 
 java {
     withSourcesJar()
-    withJavadocJar()
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
+            artifact(javadocJar)
             from(components["java"])
             pom {
                 name.set("KHexagon")
@@ -77,6 +76,11 @@ tasks.register<Jar>("dokkaJavadocJar") {
     dependsOn(tasks.dokkaJavadoc)
     from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
     archiveClassifier.set("javadoc")
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaJavadoc)
 }
 
 tasks.dokkaHtml {
