@@ -9,7 +9,7 @@ import base.math.distanceTo
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.IsolationMode
-import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
@@ -25,16 +25,16 @@ import kotlin.math.sign
 
 @OptIn(ExperimentalKotest::class)
 @DisplayName("Symmetric Pre-Computed Vision Tries")
-class SymmetricPreComputedVisionTriesTest : DescribeSpec({
+class SymmetricPreComputedVisionTriesTest : ShouldSpec({
     isolationMode = IsolationMode.InstancePerTest
 
     val gen = Arb.int(-1_000..1_000)
 
-    describe("Bresenham's line algorithm") {
+    context("Bresenham's line algorithm") {
 
-        describe("one dimensional lines") {
-            describe("q = 0") {
-                it("should construct line in order") {
+        context("one dimensional lines") {
+            context("q = 0") {
+                should("should construct line in order") {
                     checkAll(gen) { r ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(0, r)
@@ -45,8 +45,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 }
             }
 
-            describe("r = 0") {
-                it("should construct line in order") {
+            context("r = 0") {
+                should("should construct line in order") {
                     checkAll(gen) { q ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(q, 0)
@@ -57,8 +57,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 }
             }
 
-            describe("s = 0") {
-                it("should construct line in order") {
+            context("s = 0") {
+                should("should construct line in order") {
                     checkAll(gen) { q ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(q, -q)
@@ -70,7 +70,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             }
         }
 
-        describe("diagonals") {
+        context("diagonals") {
             val diagonals = Exhaustive.collection(HexCoordinates.diagonals)
 
             checkAll(diagonals) { (q, r) ->
@@ -80,7 +80,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
                 val reversedLine = end.bresenhamsLine(start)
                 println()
-                it("${HexCoordinates.from(q, r)} should construct line in order") {
+                should("${HexCoordinates.from(q, r)} should construct line in order") {
                     line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
                     line shouldHaveSize 3
                     line shouldBe reversedLine.reversed()
@@ -88,7 +88,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             }
         }
 
-        it("should be symmetric") {
+        should("should be symmetric") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -100,7 +100,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             }
         }
 
-        it("should not contain emptiness") {
+        should("should not contain emptiness") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -111,7 +111,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             }
         }
 
-        it("should contain start and end") {
+        should("should contain start and end") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -121,7 +121,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             }
         }
 
-        it("should not contain duplicates") {
+        should("should not contain duplicates") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -132,19 +132,19 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
         }
     }
 
-    describe("vision tries").config(tags = setOf(Heavy)) {
+    context("vision tries").config(tags = setOf(Heavy)) {
         val radius = 100
-        it("should be complete for a radius = $radius") {
+        should("should be complete for a radius = $radius") {
             val spcvt = SPCVT(radius)
 
             spcvt.fastLoSMap.size shouldBe 3 * radius * (radius + 1)
         }
 
-        describe("line of sight") {
+        context("line of sight") {
             val nums = Arb.int(-100..100)
             val spcvt = SPCVT(100)
 
-            it("should be symmetric") {
+            should("should be symmetric") {
 
                 var single = 0
                 var outOfRange = 0
@@ -187,11 +187,11 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             }
         }
 
-        describe("field of view") {
+        context("field of view") {
             val spcvt = SPCVT(100)
-            describe("non blocked") {
+            context("non blocked") {
 
-                it("should be a circle at origin") {
+                should("should be a circle at origin") {
 
                     val center = HexCoordinates.from(0, 0)
                     val fov = mutableListOf<HexCoordinates>()
@@ -205,10 +205,10 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     fov.distinct() shouldBeSameSizeAs center.circle(100)
                 }
 
-                describe("restricted radius") {
+                context("restricted radius") {
                     val radius = Exhaustive.collection((1..100 step 5).toList())
                     checkAll(radius) { radius ->
-                        it("should be a circle at origin with radius $radius") {
+                        should("should be a circle at origin with radius $radius") {
 
                             val center = HexCoordinates.from(0, 0)
                             val fov = mutableListOf<HexCoordinates>()
@@ -226,10 +226,10 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     }
                 }
 
-                describe("restricted radius without callback") {
+                context("restricted radius without callback") {
                     val radius = Exhaustive.collection((1..100 step 5).toList())
                     checkAll(radius) { radius ->
-                        it("should be a circle at origin with radius $radius") {
+                        should("should be a circle at origin with radius $radius") {
 
                             val center = HexCoordinates.from(0, 0)
 
