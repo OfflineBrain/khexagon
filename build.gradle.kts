@@ -176,15 +176,15 @@ publishing {
 
 tasks.dokkaHtml {
     dokkaSourceSets {
-        named("main") {
+        named("commonMain") {
             moduleName.set("KHexagon")
             skipEmptyPackages.set(true)
 
-            includes.from("src/main/kotlin/package.md")
+            includes.from("src/commonMain/kotlin/package.md")
 
             sourceLink {
-                localDirectory.set(file("src/main/kotlin"))
-                remoteUrl.set(URL("https://github.com/OfflineBrain/khexagon/tree/master/src/main/kotlin"))
+                localDirectory.set(file("src/commonMain/kotlin"))
+                remoteUrl.set(URL("https://github.com/OfflineBrain/khexagon/tree/master/src/commonMain/kotlin"))
                 remoteLineSuffix.set("#L")
             }
         }
