@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
 }
 
-group = "com.offlinebrain"
+group = "io.github.offlinebrain"
 version = "1.0-SNAPSHOT"
 
 repositories {
