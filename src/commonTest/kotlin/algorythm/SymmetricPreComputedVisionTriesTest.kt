@@ -160,7 +160,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
                             from = start,
                             to = end,
                             doesBlockVision = { _, _ -> false },
-                            callback = { _, trie -> los.add(HexCoordinates.from(trie.q, trie.r) + start) }
+                            callback = { q, r -> los.add(HexCoordinates.from(q, r) + start) }
                         )
                     val reverseVisible = spcvt.lineOfSight(
                         from = end,
