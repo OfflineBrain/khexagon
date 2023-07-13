@@ -44,6 +44,25 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+            pom {
+                name.set("KHexagon")
+                description.set("Hexagonal grid library for Kotlin")
+                url.set("https://offlinebrain.github.io/khexagon/")
+
+                scm {
+                    connection.set("scm:git:git://github.com/OfflineBrain/khexagon.git")
+                    developerConnection.set("scm:git:ssh://github.com:OfflineBrain/khexagon.git")
+                    url.set("https://github.com/OfflineBrain/khexagon")
+                }
+
+                developers {
+                    developer {
+                        id.set("OfflineBrain")
+                        name.set("Leonid Ivakhnenko")
+                        email.set("leonidivakhnenko.dev@gmail.com")
+                    }
+                }
+            }
         }
     }
 }
