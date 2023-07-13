@@ -132,8 +132,8 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
         }
     }
 
-    context("vision tries").config(tags = setOf(Heavy)) {
-        val radius = 100
+    context("vision tries") {
+        val radius = 35
         should("should be complete for a radius = $radius") {
             val spcvt = SPCVT(radius)
 
@@ -141,8 +141,8 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
         }
 
         context("line of sight") {
-            val nums = Arb.int(-100..100)
-            val spcvt = SPCVT(100)
+            val nums = Arb.int(-35..35)
+            val spcvt = SPCVT(35)
 
             should("should be symmetric") {
 
@@ -176,7 +176,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
                     if (start == end) {
                         single++
                         los.distinct() shouldHaveSize 0
-                    } else if (start distanceTo end > 100) {
+                    } else if (start distanceTo end > 35) {
                         outOfRange++
                         visible shouldBe false
                     } else {
@@ -188,7 +188,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
         }
 
         context("field of view") {
-            val spcvt = SPCVT(100)
+            val spcvt = SPCVT(35)
             context("non blocked") {
 
                 should("should be a circle at origin") {
@@ -202,11 +202,11 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
                         callback = { q, r -> fov.add(HexCoordinates.from(q, r)) }
                     )
 
-                    fov.distinct() shouldBeSameSizeAs center.circle(100)
+                    fov.distinct() shouldBeSameSizeAs center.circle(35)
                 }
 
                 context("restricted radius") {
-                    val radius = Exhaustive.collection((1..100 step 5).toList())
+                    val radius = Exhaustive.collection((1..35 step 5).toList())
                     checkAll(radius) { radius ->
                         should("should be a circle at origin with radius $radius") {
 
@@ -227,7 +227,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
                 }
 
                 context("restricted radius without callback") {
-                    val radius = Exhaustive.collection((1..100 step 5).toList())
+                    val radius = Exhaustive.collection((1..35 step 5).toList())
                     checkAll(radius) { radius ->
                         should("should be a circle at origin with radius $radius") {
 

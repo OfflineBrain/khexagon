@@ -73,6 +73,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(libs.kotest.runner.junit5)
+                implementation(kotlin("reflect"))
             }
         }
         val jsMain by getting
