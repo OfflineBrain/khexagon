@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   deploy-lib:
-    needs: [ build-all-linux, test-native-windows, test-native-ios ]
     runs-on: ubuntu-latest
     env:
       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
