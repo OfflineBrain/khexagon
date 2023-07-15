@@ -55,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: "Publish"
-        run: ./gradlew publishKotlinMultiplatformPublicationToMavenRepository
+        run: ./gradlew publishAllPublicationsToSonatypeRepository
 
   deploy-docs:
     needs: [ build-all-linux, test-native-windows, test-native-ios ]

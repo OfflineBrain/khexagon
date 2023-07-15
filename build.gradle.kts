@@ -107,6 +107,7 @@ afterEvaluate {
     publishing {
         repositories {
             maven {
+                name = "Sonatype"
                 url = if (project.version.toString().endsWith("SNAPSHOT")) {
                     uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
                 } else {
@@ -130,20 +131,21 @@ afterEvaluate {
             }
         }
 
-        publications.forEach {
-            if (it !is MavenPublication) {
-                return@forEach
-            }
+        publications.withType<MavenPublication> {
+
+            version = project.version.toString()
+            groupId = project.group.toString()
+            artifactId = "khexagon"
 
             // We need to add the javadocJar to every publication
             // because otherwise maven is complaining.
             // It is not sufficient to only have it in the "root" folder.
-            it.artifact(javadocJar)
+            artifact(javadocJar)
 
             // pom information needs to be specified per publication
             // because otherwise maven will complain again that
             // information like license, developer or url are missing.
-            it.pom {
+            pom {
                 name.set("KHexagon")
                 description.set("Hexagonal grid library for Kotlin")
                 url.set("https://offlinebrain.github.io/khexagon/")
@@ -169,14 +171,16 @@ afterEvaluate {
                     }
                 }
             }
-
-            signing {
-                useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
-                sign(it)
-            }
         }
     }
 }
+
+
+signing {
+    useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
+    sign(publishing.publications)
+}
+
 tasks.dokkaHtml {
     dokkaSourceSets {
         named("commonMain") {
