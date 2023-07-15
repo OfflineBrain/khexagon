@@ -1,3 +1,4 @@
+import org.gradle.internal.impldep.org.joda.time.DateTime
 import java.net.URL
 
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -10,8 +11,15 @@ plugins {
     signing
 }
 
+val ciVersion = System.getenv("GITHUB_REF") ?: "local"
+
 group = "io.github.offlinebrain"
-version = "0.1.0-SNAPSHOT"
+version = when {
+    ciVersion.startsWith("refs/tags/v") -> ciVersion.removePrefix("refs/tags/v")
+    ciVersion.startsWith("refs/tags/") -> ciVersion.removePrefix("refs/tags/")
+    ciVersion == "local" -> DateTime().millis.toString() + "-SNAPSHOT"
+    else -> (System.getenv("GITHUB_REF_NAME")?.removeSuffix("-SNAPSHOT") ?: "local") + "-SNAPSHOT"
+}
 
 repositories {
     mavenCentral()

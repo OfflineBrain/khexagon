@@ -66,7 +66,7 @@ jobs:
         run: ./gradlew publishNativePublicationToSonatypeRepository
 
   deploy-docs:
-    needs: [ build-all-linux, test-native-windows, test-native-ios ]
+    needs: [ deploy-lib ]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
