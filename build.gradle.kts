@@ -112,9 +112,13 @@ publishing {
                 uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             }
 
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_TOKEN")
+            credentials(HttpHeaderCredentials::class) {
+                name = "Authorization"
+                value = "Bearer: ${System.getenv("OSSRH_TOKEN")}"
+            }
+
+            authentication {
+                create<HttpHeaderAuthentication>("header")
             }
         }
     }
