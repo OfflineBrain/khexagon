@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.github.offlinebrain"
-version = "1.0-SNAPSHOT"
+version = "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -100,7 +100,7 @@ tasks.register<Jar>("dokkaJavadocJar") {
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
-    from(tasks.dokkaJavadoc)
+    from(tasks.dokkaHtml)
 }
 
 publishing {

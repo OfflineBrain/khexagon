@@ -1,0 +1,78 @@
+name: "Master Build"
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+(-SNAPSHOT){0,1}'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-all-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Assemble"
+        run: ./gradlew build
+      - name: "Test JVM"
+        run: ./gradlew jvmTest
+      - name: "Test JS"
+        run: ./gradlew jsTest
+      - name: "Test Native"
+        run: ./gradlew nativeTest
+
+  test-native-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Test Native"
+        run: ./gradlew nativeTest
+
+  test-native-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Test Native"
+        run: ./gradlew nativeTest
+
+  deploy-lib:
+    needs: [ build-all-linux, test-native-windows, test-native-ios ]
+    runs-on: ubuntu-latest
+    env:
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Assemble"
+        run: ./gradlew publish
+
+  deploy-docs:
+    needs: [ build-all-linux, test-native-windows, test-native-ios ]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: "Assemble Docs"
+        run: ./gradlew dokkaHtml
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: "./build/dokka/html"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
