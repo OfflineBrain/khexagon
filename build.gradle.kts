@@ -184,3 +184,7 @@ tasks.dokkaHtml {
 tasks.named("publishJsPublicationToSonatypeRepository") {
     dependsOn("signJvmPublication")
 }
+
+tasks.withType(PublishToMavenRepository::class) {
+    dependsOn(tasks.withType(Sign::class))
+}
