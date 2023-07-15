@@ -103,79 +103,80 @@ val javadocJar by tasks.registering(Jar::class) {
     from(tasks.dokkaHtml)
 }
 
-publishing {
-    repositories {
-        maven {
-            url = if (project.version.toString().endsWith("SNAPSHOT")) {
-                uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            } else {
-                uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            }
-
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_TOKEN")
-            }
-        }
-    }
-
-    publications {
-        val kotlinMultiplatform by getting(MavenPublication::class) {
-            // we need to keep this block up here because
-            // otherwise the different target folders like js/jvm/native are not created
-            version = project.version.toString()
-            groupId = project.group.toString()
-            artifactId = "khexagon"
-        }
-    }
-
-    publications.forEach {
-        if (it !is MavenPublication) {
-            return@forEach
-        }
-
-        // We need to add the javadocJar to every publication
-        // because otherwise maven is complaining.
-        // It is not sufficient to only have it in the "root" folder.
-        it.artifact(javadocJar)
-
-        // pom information needs to be specified per publication
-        // because otherwise maven will complain again that
-        // information like license, developer or url are missing.
-        it.pom {
-            name.set("KHexagon")
-            description.set("Hexagonal grid library for Kotlin")
-            url.set("https://offlinebrain.github.io/khexagon/")
-
-            scm {
-                connection.set("scm:git:git://github.com/OfflineBrain/khexagon.git")
-                developerConnection.set("scm:git:ssh://github.com:OfflineBrain/khexagon.git")
-                url.set("https://github.com/OfflineBrain/khexagon")
-            }
-
-            licenses {
-                license {
-                    name.set("MIT License")
-                    url.set("https://opensource.org/licenses/MIT")
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                url = if (project.version.toString().endsWith("SNAPSHOT")) {
+                    uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                } else {
+                    uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 }
-            }
 
-            developers {
-                developer {
-                    id.set("OfflineBrain")
-                    name.set("Leonid Ivakhnenko")
-                    email.set("leonidivakhnenko.dev@gmail.com")
+                credentials {
+                    username = System.getenv("OSSRH_USERNAME")
+                    password = System.getenv("OSSRH_TOKEN")
                 }
             }
         }
 
-        signing {
-            useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
-            sign(it)
+        publications {
+            val kotlinMultiplatform by getting(MavenPublication::class) {
+                // we need to keep this block up here because
+                // otherwise the different target folders like js/jvm/native are not created
+                version = project.version.toString()
+                groupId = project.group.toString()
+                artifactId = "khexagon"
+            }
+        }
+
+        publications.forEach {
+            if (it !is MavenPublication) {
+                return@forEach
+            }
+
+            // We need to add the javadocJar to every publication
+            // because otherwise maven is complaining.
+            // It is not sufficient to only have it in the "root" folder.
+            it.artifact(javadocJar)
+
+            // pom information needs to be specified per publication
+            // because otherwise maven will complain again that
+            // information like license, developer or url are missing.
+            it.pom {
+                name.set("KHexagon")
+                description.set("Hexagonal grid library for Kotlin")
+                url.set("https://offlinebrain.github.io/khexagon/")
+
+                scm {
+                    connection.set("scm:git:git://github.com/OfflineBrain/khexagon.git")
+                    developerConnection.set("scm:git:ssh://github.com:OfflineBrain/khexagon.git")
+                    url.set("https://github.com/OfflineBrain/khexagon")
+                }
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("OfflineBrain")
+                        name.set("Leonid Ivakhnenko")
+                        email.set("leonidivakhnenko.dev@gmail.com")
+                    }
+                }
+            }
+
+            signing {
+                useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
+                sign(it)
+            }
         }
     }
 }
-
 tasks.dokkaHtml {
     dokkaSourceSets {
         named("commonMain") {
