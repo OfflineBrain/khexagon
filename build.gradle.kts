@@ -180,3 +180,7 @@ tasks.dokkaHtml {
 //    useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
 //    sign(publishing.publications)
 //}
+
+tasks.named("publishJsPublicationToSonatypeRepository") {
+    dependsOn("signJvmPublication")
+}
