@@ -4,6 +4,7 @@ import base.math.bresenhamsLine
 import base.math.circle
 import base.math.distance
 import base.math.distanceTo
+import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldHaveSize
@@ -18,6 +19,7 @@ import io.kotest.property.exhaustive.collection
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
+@OptIn(ExperimentalKotest::class)
 class SPCVTTest : StringSpec({
     val gen = Arb.int(-1_000..1_000)
 
@@ -169,10 +171,10 @@ class SPCVTTest : StringSpec({
     }
 
     "Symmetric pre-computed vision tries - field of view at origin with restricted radius - should return a circle" {
-        val radius = Exhaustive.collection((1..35 step 5).toList())
+        val radiuses = Exhaustive.collection((1..35 step 5).toList())
         val spcvt = SPCVT(35)
 
-        checkAll(radius) { radius ->
+        checkAll(radiuses) { radius ->
             val center = HexCoordinates.from(0, 0)
             val fov = mutableListOf<HexCoordinates>()
 
@@ -186,10 +188,10 @@ class SPCVTTest : StringSpec({
     }
 
     "Symmetric pre-computed vision tries - field of view at origin with restricted radius without callback - should return a circle" {
-        val radius = Exhaustive.collection((1..35 step 5).toList())
+        val radiuses = Exhaustive.collection((1..35 step 5).toList())
         val spcvt = SPCVT(35)
 
-        checkAll(radius) { radius ->
+        checkAll(radiuses) { radius ->
             val center = HexCoordinates.from(0, 0)
 
             val fov = spcvt.fieldOfView(

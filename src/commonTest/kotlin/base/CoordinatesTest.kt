@@ -13,6 +13,7 @@ import io.kotest.property.checkAll
 import io.kotest.property.exhaustive.ints
 import kotlin.math.abs
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @DisplayName("Coordinates")
 class CoordinatesTest : DescribeSpec({
     val gen = Arb.int(-1_000_000..1_000_000)

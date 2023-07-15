@@ -7,6 +7,7 @@ plugins {
 
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotest.multiplatform)
+    signing
 }
 
 group = "io.github.offlinebrain"
@@ -25,7 +26,7 @@ kotlin {
         compilations {
             all {
                 kotlinOptions {
-                    jvmTarget = "1.8"
+                    jvmTarget = "17"
                 }
             }
             val main by getting {}
@@ -40,7 +41,7 @@ kotlin {
         browser {
             testTask {
                 useKarma {
-                    useFirefox()
+                    useChromiumHeadless()
                 }
             }
         }
@@ -168,10 +169,10 @@ publishing {
             }
         }
 
-//        signing {
-//            useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
-//            sign(it)
-//        }
+        signing {
+            useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
+            sign(it)
+        }
     }
 }
 

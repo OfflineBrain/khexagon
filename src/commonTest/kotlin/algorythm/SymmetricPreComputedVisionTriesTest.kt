@@ -23,6 +23,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 @OptIn(ExperimentalKotest::class)
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @DisplayName("Symmetric Pre-Computed Vision Tries")
 class SymmetricPreComputedVisionTriesTest : DescribeSpec({
     isolationMode = IsolationMode.InstancePerTest
@@ -205,41 +206,35 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 }
 
                 context("restricted radius") {
-                    val radius = Exhaustive.collection((1..35 step 5).toList())
-                    checkAll(radius) { radius ->
-                        it("should be a circle at origin with radius $radius") {
+                    it("should be a circle at origin with radius $radius") {
 
-                            val center = HexCoordinates.from(0, 0)
-                            val fov = mutableListOf<HexCoordinates>()
+                        val center = HexCoordinates.from(0, 0)
+                        val fov = mutableListOf<HexCoordinates>()
 
-                            spcvt.fieldOfView(
-                                from = center,
-                                doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius },
-                                callback = { q, r -> fov.add(HexCoordinates.from(q, r)) },
-                            )
+                        spcvt.fieldOfView(
+                            from = center,
+                            doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius },
+                            callback = { q, r -> fov.add(HexCoordinates.from(q, r)) },
+                        )
 
-                            println("fov: ${fov.size}, distinct: ${fov.distinct().size}")
+                        println("fov: ${fov.size}, distinct: ${fov.distinct().size}")
 
-                            fov.distinct() shouldBeSameSizeAs center.circle(radius)
-                        }
+                        fov.distinct() shouldBeSameSizeAs center.circle(radius)
                     }
                 }
 
                 context("restricted radius without callback") {
-                    val radius = Exhaustive.collection((1..35 step 5).toList())
-                    checkAll(radius) { radius ->
-                        it("should be a circle at origin with radius $radius") {
+                    it("should be a circle at origin with radius $radius") {
 
-                            val center = HexCoordinates.from(0, 0)
+                        val center = HexCoordinates.from(0, 0)
 
-                            val fov = spcvt.fieldOfView(
-                                from = center,
-                                doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius }
-                            )
+                        val fov = spcvt.fieldOfView(
+                            from = center,
+                            doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius }
+                        )
 
 
-                            fov shouldBeSameSizeAs center.circle(radius)
-                        }
+                        fov shouldBeSameSizeAs center.circle(radius)
                     }
                 }
             }

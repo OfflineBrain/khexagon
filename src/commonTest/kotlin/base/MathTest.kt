@@ -9,6 +9,7 @@ import io.kotest.property.Exhaustive
 import io.kotest.property.checkAll
 import io.kotest.property.exhaustive.collection
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @DisplayName("Math")
 class MathTest : DescribeSpec({
     describe("Dimensions") {

@@ -2,9 +2,12 @@ package algorythm
 
 import base.coordinates.AxisPoint
 import base.math.distanceTo
+import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
+@DisplayName("Pathfinding")
 class PathfindingTest : DescribeSpec({
     context("A*") {
         data class Point(override val q: Int, override val r: Int, val walkable: Boolean) : AxisPoint {

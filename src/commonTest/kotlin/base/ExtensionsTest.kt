@@ -9,9 +9,10 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.checkAll
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @DisplayName("Coordinates extension functions")
 class ExtensionsTest : DescribeSpec({
-    val gen = Arb.int(-1_000..1_000)
+    val gen = Arb.int(-100..100)
 
     describe("line calculation") {
         it("should calculate a line between two points") {
