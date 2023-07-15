@@ -1,6 +1,5 @@
 package algorythm
 
-import Heavy
 import base.coordinates.HexCoordinates
 import base.math.bresenhamsLine
 import base.math.circle
