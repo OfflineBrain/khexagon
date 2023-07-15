@@ -8,7 +8,7 @@ import base.math.distanceTo
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.IsolationMode
-import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.should
@@ -24,7 +24,7 @@ import kotlin.math.sign
 
 @OptIn(ExperimentalKotest::class)
 @DisplayName("Symmetric Pre-Computed Vision Tries")
-class SymmetricPreComputedVisionTriesTest : ShouldSpec({
+class SymmetricPreComputedVisionTriesTest : DescribeSpec({
     isolationMode = IsolationMode.InstancePerTest
 
     val gen = Arb.int(-1_000..1_000)
@@ -33,7 +33,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
 
         context("one dimensional lines") {
             context("q = 0") {
-                should("should construct line in order") {
+                it("should construct line in order") {
                     checkAll(gen) { r ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(0, r)
@@ -45,7 +45,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             }
 
             context("r = 0") {
-                should("should construct line in order") {
+                it("should construct line in order") {
                     checkAll(gen) { q ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(q, 0)
@@ -57,7 +57,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             }
 
             context("s = 0") {
-                should("should construct line in order") {
+                it("should construct line in order") {
                     checkAll(gen) { q ->
                         val start = HexCoordinates.from(0, 0)
                         val end = HexCoordinates.from(q, -q)
@@ -79,7 +79,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
 
                 val reversedLine = end.bresenhamsLine(start)
                 println()
-                should("${HexCoordinates.from(q, r)} should construct line in order") {
+                it("${HexCoordinates.from(q, r)} should construct line in order") {
                     line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
                     line shouldHaveSize 3
                     line shouldBe reversedLine.reversed()
@@ -87,7 +87,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             }
         }
 
-        should("should be symmetric") {
+        it("should be symmetric") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -99,7 +99,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             }
         }
 
-        should("should not contain emptiness") {
+        it("should not contain emptiness") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -110,7 +110,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             }
         }
 
-        should("should contain start and end") {
+        it("should contain start and end") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -120,7 +120,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             }
         }
 
-        should("should not contain duplicates") {
+        it("should not contain duplicates") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                 val start = HexCoordinates.from(q1, r1)
                 val end = HexCoordinates.from(q2, r2)
@@ -133,7 +133,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
 
     context("vision tries") {
         val radius = 35
-        should("should be complete for a radius = $radius") {
+        it("should be complete for a radius = $radius") {
             val spcvt = SPCVT(radius)
 
             spcvt.fastLoSMap.size shouldBe 3 * radius * (radius + 1)
@@ -143,7 +143,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             val nums = Arb.int(-35..35)
             val spcvt = SPCVT(35)
 
-            should("should be symmetric") {
+            it("should be symmetric") {
 
                 var single = 0
                 var outOfRange = 0
@@ -190,7 +190,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
             val spcvt = SPCVT(35)
             context("non blocked") {
 
-                should("should be a circle at origin") {
+                it("should be a circle at origin") {
 
                     val center = HexCoordinates.from(0, 0)
                     val fov = mutableListOf<HexCoordinates>()
@@ -207,7 +207,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
                 context("restricted radius") {
                     val radius = Exhaustive.collection((1..35 step 5).toList())
                     checkAll(radius) { radius ->
-                        should("should be a circle at origin with radius $radius") {
+                        it("should be a circle at origin with radius $radius") {
 
                             val center = HexCoordinates.from(0, 0)
                             val fov = mutableListOf<HexCoordinates>()
@@ -228,7 +228,7 @@ class SymmetricPreComputedVisionTriesTest : ShouldSpec({
                 context("restricted radius without callback") {
                     val radius = Exhaustive.collection((1..35 step 5).toList())
                     checkAll(radius) { radius ->
-                        should("should be a circle at origin with radius $radius") {
+                        it("should be a circle at origin with radius $radius") {
 
                             val center = HexCoordinates.from(0, 0)
 

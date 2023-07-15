@@ -7,7 +7,7 @@ fun <T> aStar(
     to: T,
     neighbors: (T) -> List<T>,
     isWalkable: (T) -> Boolean,
-    heuristic: (T) -> Int
+    heuristic: (T, T) -> Int
 ): List<T> where T : AxisPoint {
     if (!isWalkable(from) || !isWalkable(to)) return emptyList()
     if (from.q == to.q && from.r == to.r) return listOf(from)
@@ -29,7 +29,7 @@ fun <T> aStar(
             val newCost = (costs[current.first] ?: 0) + moveCost
             if (previousCost == null || newCost < previousCost) {
                 costs[neighbor] = newCost
-                val priority = newCost + heuristic(neighbor)
+                val priority = newCost + heuristic(current.first, neighbor)
                 openSet.apply {
                     add(neighbor to priority)
                     sortByDescending { it.second }
