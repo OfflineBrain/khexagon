@@ -54,7 +54,7 @@ jobs:
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
     steps:
       - uses: actions/checkout@v3
-      - name: "Assemble"
+      - name: "Publish"
         run: ./gradlew publish
 
   deploy-docs:
