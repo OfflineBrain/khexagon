@@ -36,11 +36,11 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             context("q = 0") {
                 it("should construct line in order") {
                     checkAll(gen) { r ->
-                        val start = HexCoordinates.from(0, 0)
-                        val end = HexCoordinates.from(0, r)
+                        val start = HexCoordinates.cached(0, 0)
+                        val end = HexCoordinates.cached(0, r)
                         val line = start.bresenhamsLine(end)
 
-                        line shouldBe List(r.absoluteValue + 1) { HexCoordinates.from(0, it * r.sign) }
+                        line shouldBe List(r.absoluteValue + 1) { HexCoordinates.cached(0, it * r.sign) }
                     }
                 }
             }
@@ -48,11 +48,11 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             context("r = 0") {
                 it("should construct line in order") {
                     checkAll(gen) { q ->
-                        val start = HexCoordinates.from(0, 0)
-                        val end = HexCoordinates.from(q, 0)
+                        val start = HexCoordinates.cached(0, 0)
+                        val end = HexCoordinates.cached(q, 0)
                         val line = start.bresenhamsLine(end)
 
-                        line shouldBe List(q.absoluteValue + 1) { HexCoordinates.from(it * q.sign, 0) }
+                        line shouldBe List(q.absoluteValue + 1) { HexCoordinates.cached(it * q.sign, 0) }
                     }
                 }
             }
@@ -60,11 +60,11 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             context("s = 0") {
                 it("should construct line in order") {
                     checkAll(gen) { q ->
-                        val start = HexCoordinates.from(0, 0)
-                        val end = HexCoordinates.from(q, -q)
+                        val start = HexCoordinates.cached(0, 0)
+                        val end = HexCoordinates.cached(q, -q)
                         val line = start.bresenhamsLine(end)
 
-                        line shouldBe List(q.absoluteValue + 1) { HexCoordinates.from(it * q.sign, -(it * q.sign)) }
+                        line shouldBe List(q.absoluteValue + 1) { HexCoordinates.cached(it * q.sign, -(it * q.sign)) }
                     }
                 }
             }
@@ -74,13 +74,13 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
             val diagonals = Exhaustive.collection(HexCoordinates.diagonals)
 
             checkAll(diagonals) { (q, r) ->
-                val start = HexCoordinates.from(0, 0)
-                val end = HexCoordinates.from(q, r)
+                val start = HexCoordinates.cached(0, 0)
+                val end = HexCoordinates.cached(q, r)
                 val line = start.bresenhamsLine(end)
 
                 val reversedLine = end.bresenhamsLine(start)
                 println()
-                it("${HexCoordinates.from(q, r)} should construct line in order") {
+                it("${HexCoordinates.cached(q, r)} should construct line in order") {
                     line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
                     line shouldHaveSize 3
                     line shouldBe reversedLine.reversed()
@@ -90,8 +90,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
         it("should be symmetric") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-                val start = HexCoordinates.from(q1, r1)
-                val end = HexCoordinates.from(q2, r2)
+                val start = HexCoordinates.cached(q1, r1)
+                val end = HexCoordinates.cached(q2, r2)
                 val line = start.bresenhamsLine(end)
 
                 val reversedLine = end.bresenhamsLine(start)
@@ -102,8 +102,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
         it("should not contain emptiness") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-                val start = HexCoordinates.from(q1, r1)
-                val end = HexCoordinates.from(q2, r2)
+                val start = HexCoordinates.cached(q1, r1)
+                val end = HexCoordinates.cached(q2, r2)
                 val line = start.bresenhamsLine(end)
 
 
@@ -113,8 +113,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
         it("should contain start and end") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-                val start = HexCoordinates.from(q1, r1)
-                val end = HexCoordinates.from(q2, r2)
+                val start = HexCoordinates.cached(q1, r1)
+                val end = HexCoordinates.cached(q2, r2)
                 val line = start.bresenhamsLine(end)
 
                 line should { l -> l.contains(start) && l.contains(end) }
@@ -123,8 +123,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
         it("should not contain duplicates") {
             checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-                val start = HexCoordinates.from(q1, r1)
-                val end = HexCoordinates.from(q2, r2)
+                val start = HexCoordinates.cached(q1, r1)
+                val end = HexCoordinates.cached(q2, r2)
                 val line = start.bresenhamsLine(end)
 
                 line.toSet().size shouldBe line.size
@@ -151,8 +151,8 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 var complete = 0
 
                 checkAll(PropTestConfig(iterations = 10_000), nums, nums, nums, nums) { q1, r1, q2, r2 ->
-                    val start = HexCoordinates.from(q1, r1)
-                    val end = HexCoordinates.from(q2, r2)
+                    val start = HexCoordinates.cached(q1, r1)
+                    val end = HexCoordinates.cached(q2, r2)
 
                     val los = mutableListOf<HexCoordinates>()
                     val visible =
@@ -160,7 +160,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                             from = start,
                             to = end,
                             doesBlockVision = { _, _ -> false },
-                            callback = { q, r -> los.add(HexCoordinates.from(q, r) + start) }
+                            callback = { q, r -> los.add(HexCoordinates.cached(q, r) + start) }
                         )
                     val reverseVisible = spcvt.lineOfSight(
                         from = end,
@@ -193,13 +193,13 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
 
                 it("should be a circle at origin") {
 
-                    val center = HexCoordinates.from(0, 0)
+                    val center = HexCoordinates.cached(0, 0)
                     val fov = mutableListOf<HexCoordinates>()
 
                     spcvt.fieldOfView(
                         from = center,
                         doesBlockVision = { _, _ -> false },
-                        callback = { q, r -> fov.add(HexCoordinates.from(q, r)) }
+                        callback = { q, r -> fov.add(HexCoordinates.cached(q, r)) }
                     )
 
                     fov.distinct() shouldBeSameSizeAs center.circle(35)
@@ -208,13 +208,13 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 context("restricted radius") {
                     it("should be a circle at origin with radius $radius") {
 
-                        val center = HexCoordinates.from(0, 0)
+                        val center = HexCoordinates.cached(0, 0)
                         val fov = mutableListOf<HexCoordinates>()
 
                         spcvt.fieldOfView(
                             from = center,
                             doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius },
-                            callback = { q, r -> fov.add(HexCoordinates.from(q, r)) },
+                            callback = { q, r -> fov.add(HexCoordinates.cached(q, r)) },
                         )
 
                         println("fov: ${fov.size}, distinct: ${fov.distinct().size}")
@@ -226,7 +226,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 context("restricted radius without callback") {
                     it("should be a circle at origin with radius $radius") {
 
-                        val center = HexCoordinates.from(0, 0)
+                        val center = HexCoordinates.cached(0, 0)
 
                         val fov = spcvt.fieldOfView(
                             from = center,

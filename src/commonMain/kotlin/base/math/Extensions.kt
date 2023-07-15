@@ -69,7 +69,7 @@ fun <T> T.circle(radius: Int): List<T>
     val result = mutableListOf<T>()
     for (q in -radius..radius) {
         for (r in maxOf(-radius, -q - radius)..minOf(radius, -q + radius)) {
-            result.add(HexCoordinates.from(q + this.q, r + this.r).into())
+            result.add(HexCoordinates.cached(q + this.q, r + this.r).into())
         }
     }
     return result

@@ -25,39 +25,39 @@ class SPCVTTest : StringSpec({
 
     "Bresenham's line algorithm - one dimensional lines - q = 0 - line construction" {
         checkAll(gen) { r ->
-            val start = HexCoordinates.from(0, 0)
-            val end = HexCoordinates.from(0, r)
+            val start = HexCoordinates.cached(0, 0)
+            val end = HexCoordinates.cached(0, r)
             val line = start.bresenhamsLine(end)
 
-            line shouldBe List(r.absoluteValue + 1) { HexCoordinates.from(0, it * r.sign) }
+            line shouldBe List(r.absoluteValue + 1) { HexCoordinates.cached(0, it * r.sign) }
         }
     }
 
     "Bresenham's line algorithm - one dimensional lines - r = 0 - line construction" {
         checkAll(gen) { q ->
-            val start = HexCoordinates.from(0, 0)
-            val end = HexCoordinates.from(q, 0)
+            val start = HexCoordinates.cached(0, 0)
+            val end = HexCoordinates.cached(q, 0)
             val line = start.bresenhamsLine(end)
 
-            line shouldBe List(q.absoluteValue + 1) { HexCoordinates.from(it * q.sign, 0) }
+            line shouldBe List(q.absoluteValue + 1) { HexCoordinates.cached(it * q.sign, 0) }
         }
     }
 
     "Bresenham's line algorithm - one dimensional lines - s = 0 - line construction" {
         checkAll(gen) { q ->
-            val start = HexCoordinates.from(0, 0)
-            val end = HexCoordinates.from(q, -q)
+            val start = HexCoordinates.cached(0, 0)
+            val end = HexCoordinates.cached(q, -q)
             val line = start.bresenhamsLine(end)
 
-            line shouldBe List(q.absoluteValue + 1) { HexCoordinates.from(it * q.sign, -(it * q.sign)) }
+            line shouldBe List(q.absoluteValue + 1) { HexCoordinates.cached(it * q.sign, -(it * q.sign)) }
         }
     }
 
     "Bresenham's line algorithm - diagonals - line construction" {
         val diagonals = Exhaustive.collection(HexCoordinates.diagonals)
         checkAll(diagonals) { (q, r) ->
-            val start = HexCoordinates.from(0, 0)
-            val end = HexCoordinates.from(q, r)
+            val start = HexCoordinates.cached(0, 0)
+            val end = HexCoordinates.cached(q, r)
             val line = start.bresenhamsLine(end)
             val reversedLine = end.bresenhamsLine(start)
             line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
@@ -68,8 +68,8 @@ class SPCVTTest : StringSpec({
 
     "Bresenham's line algorithm - should be symmetric" {
         checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-            val start = HexCoordinates.from(q1, r1)
-            val end = HexCoordinates.from(q2, r2)
+            val start = HexCoordinates.cached(q1, r1)
+            val end = HexCoordinates.cached(q2, r2)
             val line = start.bresenhamsLine(end)
 
             val reversedLine = end.bresenhamsLine(start)
@@ -80,8 +80,8 @@ class SPCVTTest : StringSpec({
 
     "Bresenham's line algorithm - should not contain emptiness" {
         checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-            val start = HexCoordinates.from(q1, r1)
-            val end = HexCoordinates.from(q2, r2)
+            val start = HexCoordinates.cached(q1, r1)
+            val end = HexCoordinates.cached(q2, r2)
             val line = start.bresenhamsLine(end)
 
             line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
@@ -90,8 +90,8 @@ class SPCVTTest : StringSpec({
 
     "Bresenham's line algorithm - should contain start and end" {
         checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-            val start = HexCoordinates.from(q1, r1)
-            val end = HexCoordinates.from(q2, r2)
+            val start = HexCoordinates.cached(q1, r1)
+            val end = HexCoordinates.cached(q2, r2)
             val line = start.bresenhamsLine(end)
 
             line should { l -> l.contains(start) && l.contains(end) }
@@ -100,8 +100,8 @@ class SPCVTTest : StringSpec({
 
     "Bresenham's line algorithm - should not contain duplicates" {
         checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-            val start = HexCoordinates.from(q1, r1)
-            val end = HexCoordinates.from(q2, r2)
+            val start = HexCoordinates.cached(q1, r1)
+            val end = HexCoordinates.cached(q2, r2)
             val line = start.bresenhamsLine(end)
 
             line.toSet().size shouldBe line.size
@@ -123,8 +123,8 @@ class SPCVTTest : StringSpec({
         var complete = 0
 
         checkAll(PropTestConfig(iterations = 10_000), nums, nums, nums, nums) { q1, r1, q2, r2 ->
-            val start = HexCoordinates.from(q1, r1)
-            val end = HexCoordinates.from(q2, r2)
+            val start = HexCoordinates.cached(q1, r1)
+            val end = HexCoordinates.cached(q2, r2)
 
             val los = mutableListOf<HexCoordinates>()
             val visible =
@@ -132,7 +132,7 @@ class SPCVTTest : StringSpec({
                     from = start,
                     to = end,
                     doesBlockVision = { _, _ -> false },
-                    callback = { q, r -> los.add(HexCoordinates.from(q, r) + start) }
+                    callback = { q, r -> los.add(HexCoordinates.cached(q, r) + start) }
                 )
             val reverseVisible = spcvt.lineOfSight(
                 from = end,
@@ -157,14 +157,14 @@ class SPCVTTest : StringSpec({
     }
 
     "Symmetric pre-computed vision tries - field of view at origin - should return a circle" {
-        val center = HexCoordinates.from(0, 0)
+        val center = HexCoordinates.cached(0, 0)
         val fov = mutableListOf<HexCoordinates>()
         val spcvt = SPCVT(35)
 
         spcvt.fieldOfView(
             from = center,
             doesBlockVision = { _, _ -> false },
-            callback = { q, r -> fov.add(HexCoordinates.from(q, r)) }
+            callback = { q, r -> fov.add(HexCoordinates.cached(q, r)) }
         )
 
         fov.distinct() shouldBeSameSizeAs center.circle(35)
@@ -175,13 +175,13 @@ class SPCVTTest : StringSpec({
         val spcvt = SPCVT(35)
 
         checkAll(radiuses) { radius ->
-            val center = HexCoordinates.from(0, 0)
+            val center = HexCoordinates.cached(0, 0)
             val fov = mutableListOf<HexCoordinates>()
 
             spcvt.fieldOfView(
                 from = center,
                 doesBlockVision = { q, r -> distance(q, r, 0, 0) > radius },
-                callback = { q, r -> fov.add(HexCoordinates.from(q, r)) },
+                callback = { q, r -> fov.add(HexCoordinates.cached(q, r)) },
             )
             fov.distinct() shouldBeSameSizeAs center.circle(radius)
         }
@@ -192,7 +192,7 @@ class SPCVTTest : StringSpec({
         val spcvt = SPCVT(35)
 
         checkAll(radiuses) { radius ->
-            val center = HexCoordinates.from(0, 0)
+            val center = HexCoordinates.cached(0, 0)
 
             val fov = spcvt.fieldOfView(
                 from = center,

@@ -23,7 +23,7 @@ class CoordinatesTest : DescribeSpec({
         it("should construct correctly") {
             checkAll<Int, Int> { q, r ->
                 val s = -q - r
-                val coordinates = HexCoordinates.from(q, r)
+                val coordinates = HexCoordinates.cached(q, r)
                 coordinates.q shouldBe q
                 coordinates.r shouldBe r
                 coordinates.s shouldBe s
@@ -34,27 +34,27 @@ class CoordinatesTest : DescribeSpec({
 
             it("should be 0 for the same coordinates") {
                 checkAll(gen) { q ->
-                    val coordinates = HexCoordinates.from(q, q)
+                    val coordinates = HexCoordinates.cached(q, q)
                     (coordinates distanceTo coordinates) shouldBe 0
                 }
             }
 
             it("should be 1 for adjacent coordinates") {
                 checkAll(gen) { q ->
-                    val coordinates = HexCoordinates.from(q, q)
-                    (coordinates distanceTo coordinates + HexCoordinates.from(1, 0)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.from(0, 1)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.from(-1, 1)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.from(-1, 0)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.from(0, -1)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.from(1, -1)) shouldBe 1
+                    val coordinates = HexCoordinates.cached(q, q)
+                    (coordinates distanceTo coordinates + HexCoordinates.cached(1, 0)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates.cached(0, 1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates.cached(-1, 1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates.cached(-1, 0)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates.cached(0, -1)) shouldBe 1
+                    (coordinates distanceTo coordinates + HexCoordinates.cached(1, -1)) shouldBe 1
                 }
             }
 
             it("should be max of abs(q), abs(r), abs(s) for non-adjacent coordinates") {
                 checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
-                    val coordinates1 = HexCoordinates.from(q1, r1)
-                    val coordinates2 = HexCoordinates.from(q2, r2)
+                    val coordinates1 = HexCoordinates.cached(q1, r1)
+                    val coordinates2 = HexCoordinates.cached(q2, r2)
                     (coordinates1 distanceTo coordinates2) shouldBe maxOf(
                         abs(q1 - q2),
                         abs(r1 - r2),
@@ -67,21 +67,21 @@ class CoordinatesTest : DescribeSpec({
         describe("neighbors") {
             it("should be 6") {
                 checkAll(gen, gen) { q, r ->
-                    val coordinates = HexCoordinates.from(q, r)
+                    val coordinates = HexCoordinates.cached(q, r)
                     coordinates.neighbors.size shouldBe 6
                 }
             }
 
             it("should be unique") {
                 checkAll(gen, gen) { q, r ->
-                    val coordinates = HexCoordinates.from(q, r)
+                    val coordinates = HexCoordinates.cached(q, r)
                     coordinates.neighbors.toSet().size shouldBe 6
                 }
             }
 
             it("should be adjacent") {
                 checkAll(gen, gen) { q, r ->
-                    val coordinates = HexCoordinates.from(q, r)
+                    val coordinates = HexCoordinates.cached(q, r)
                     coordinates.neighbors.forEach {
                         (coordinates distanceTo it) shouldBe 1
                     }
@@ -90,13 +90,13 @@ class CoordinatesTest : DescribeSpec({
 
             it("should return the correct neighbor") {
                 checkAll(gen, gen) { q, r ->
-                    val coordinates = HexCoordinates.from(q, r)
-                    coordinates[Coordinates.Flat.RightBottom] shouldBe coordinates + HexCoordinates.from(1, 0)
-                    coordinates[Coordinates.Flat.RightTop] shouldBe coordinates + HexCoordinates.from(1, -1)
-                    coordinates[Coordinates.Flat.Top] shouldBe coordinates + HexCoordinates.from(0, -1)
-                    coordinates[Coordinates.Flat.LeftTop] shouldBe coordinates + HexCoordinates.from(-1, 0)
-                    coordinates[Coordinates.Flat.LeftBottom] shouldBe coordinates + HexCoordinates.from(-1, 1)
-                    coordinates[Coordinates.Flat.Bottom] shouldBe coordinates + HexCoordinates.from(0, 1)
+                    val coordinates = HexCoordinates.cached(q, r)
+                    coordinates[Coordinates.Flat.RightBottom] shouldBe coordinates + HexCoordinates.cached(1, 0)
+                    coordinates[Coordinates.Flat.RightTop] shouldBe coordinates + HexCoordinates.cached(1, -1)
+                    coordinates[Coordinates.Flat.Top] shouldBe coordinates + HexCoordinates.cached(0, -1)
+                    coordinates[Coordinates.Flat.LeftTop] shouldBe coordinates + HexCoordinates.cached(-1, 0)
+                    coordinates[Coordinates.Flat.LeftBottom] shouldBe coordinates + HexCoordinates.cached(-1, 1)
+                    coordinates[Coordinates.Flat.Bottom] shouldBe coordinates + HexCoordinates.cached(0, 1)
                 }
             }
         }
@@ -108,7 +108,7 @@ class CoordinatesTest : DescribeSpec({
             describe("neighbors") {
                 it("should return the correct neighbor") {
                     checkAll(gen, gen, directions) { q, r, direction ->
-                        val hex = HexCoordinates.from(q, r)
+                        val hex = HexCoordinates.cached(q, r)
                         val coordinates = hex.toEvenQCoordinates()
                         coordinates[direction] shouldBe hex[direction].toEvenQCoordinates()
                     }
@@ -120,7 +120,7 @@ class CoordinatesTest : DescribeSpec({
             describe("neighbors") {
                 it("should return the correct neighbor") {
                     checkAll(gen, gen, directions) { q, r, direction ->
-                        val hex = HexCoordinates.from(q, r)
+                        val hex = HexCoordinates.cached(q, r)
                         val coordinates = hex.toEvenRCoordinates()
                         coordinates[direction] shouldBe hex[direction].toEvenRCoordinates()
                     }
@@ -132,7 +132,7 @@ class CoordinatesTest : DescribeSpec({
             describe("neighbors") {
                 it("should return the correct neighbor") {
                     checkAll(gen, gen, directions) { q, r, direction ->
-                        val hex = HexCoordinates.from(q, r)
+                        val hex = HexCoordinates.cached(q, r)
                         val coordinates = hex.toOddQCoordinates()
                         coordinates[direction] shouldBe hex[direction].toOddQCoordinates()
                     }
@@ -144,7 +144,7 @@ class CoordinatesTest : DescribeSpec({
             describe("neighbors") {
                 it("should return the correct neighbor") {
                     checkAll(gen, gen, directions) { q, r, direction ->
-                        val hex = HexCoordinates.from(q, r)
+                        val hex = HexCoordinates.cached(q, r)
                         val coordinates = hex.toOddRCoordinates()
                         coordinates[direction] shouldBe hex[direction].toOddRCoordinates()
                     }
@@ -158,21 +158,21 @@ class CoordinatesTest : DescribeSpec({
             describe("neighbors") {
                 it("should be 6") {
                     checkAll(gen, gen) { q, r ->
-                        val coordinates = HexCoordinates.from(q, r).toDoubleWidthCoordinates()
+                        val coordinates = HexCoordinates.cached(q, r).toDoubleWidthCoordinates()
                         coordinates.neighbors.size shouldBe 6
                     }
                 }
 
                 it("should be unique") {
                     checkAll(gen, gen) { q, r ->
-                        val coordinates = HexCoordinates.from(q, r).toDoubleWidthCoordinates()
+                        val coordinates = HexCoordinates.cached(q, r).toDoubleWidthCoordinates()
                         coordinates.neighbors.toSet().size shouldBe 6
                     }
                 }
 
                 it("should be adjacent") {
                     checkAll(gen, gen) { q, r ->
-                        val coordinates = HexCoordinates.from(q, r).toDoubleWidthCoordinates()
+                        val coordinates = HexCoordinates.cached(q, r).toDoubleWidthCoordinates()
                         coordinates.neighbors.forEach {
                             (coordinates.toHexCoordinates() distanceTo it.toHexCoordinates()) shouldBe 1
                         }
@@ -181,20 +181,20 @@ class CoordinatesTest : DescribeSpec({
 
                 it("should return the correct neighbor") {
                     checkAll(gen, gen) { q, r ->
-                        val hex = HexCoordinates.from(q, r)
+                        val hex = HexCoordinates.cached(q, r)
                         val coordinates = hex.toDoubleWidthCoordinates()
                         coordinates[Coordinates.Flat.RightBottom].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(1, 0)
+                                hex + HexCoordinates.cached(1, 0)
                         coordinates[Coordinates.Flat.RightTop].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(1, -1)
+                                hex + HexCoordinates.cached(1, -1)
                         coordinates[Coordinates.Flat.Top].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(0, -1)
+                                hex + HexCoordinates.cached(0, -1)
                         coordinates[Coordinates.Flat.LeftTop].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(-1, 0)
+                                hex + HexCoordinates.cached(-1, 0)
                         coordinates[Coordinates.Flat.LeftBottom].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(-1, 1)
+                                hex + HexCoordinates.cached(-1, 1)
                         coordinates[Coordinates.Flat.Bottom].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(0, 1)
+                                hex + HexCoordinates.cached(0, 1)
                     }
                 }
             }
@@ -204,21 +204,21 @@ class CoordinatesTest : DescribeSpec({
             describe("neighbors") {
                 it("should be 6") {
                     checkAll(gen, gen) { q, r ->
-                        val coordinates = HexCoordinates.from(q, r).toDoubleHeightCoordinates()
+                        val coordinates = HexCoordinates.cached(q, r).toDoubleHeightCoordinates()
                         coordinates.neighbors.size shouldBe 6
                     }
                 }
 
                 it("should be unique") {
                     checkAll(gen, gen) { q, r ->
-                        val coordinates = HexCoordinates.from(q, r).toDoubleHeightCoordinates()
+                        val coordinates = HexCoordinates.cached(q, r).toDoubleHeightCoordinates()
                         coordinates.neighbors.toSet().size shouldBe 6
                     }
                 }
 
                 it("should be adjacent") {
                     checkAll(gen, gen) { q, r ->
-                        val coordinates = HexCoordinates.from(q, r).toDoubleHeightCoordinates()
+                        val coordinates = HexCoordinates.cached(q, r).toDoubleHeightCoordinates()
                         coordinates.neighbors.forEach {
                             (coordinates.toHexCoordinates() distanceTo it.toHexCoordinates()) shouldBe 1
                         }
@@ -227,20 +227,20 @@ class CoordinatesTest : DescribeSpec({
 
                 it("should return the correct neighbor") {
                     checkAll(gen, gen) { q, r ->
-                        val hex = HexCoordinates.from(q, r)
+                        val hex = HexCoordinates.cached(q, r)
                         val coordinates = hex.toDoubleHeightCoordinates()
                         coordinates[Coordinates.Flat.RightBottom].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(1, 0)
+                                hex + HexCoordinates.cached(1, 0)
                         coordinates[Coordinates.Flat.RightTop].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(1, -1)
+                                hex + HexCoordinates.cached(1, -1)
                         coordinates[Coordinates.Flat.Top].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(0, -1)
+                                hex + HexCoordinates.cached(0, -1)
                         coordinates[Coordinates.Flat.LeftTop].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(-1, 0)
+                                hex + HexCoordinates.cached(-1, 0)
                         coordinates[Coordinates.Flat.LeftBottom].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(-1, 1)
+                                hex + HexCoordinates.cached(-1, 1)
                         coordinates[Coordinates.Flat.Bottom].toHexCoordinates() shouldBe
-                                hex + HexCoordinates.from(0, 1)
+                                hex + HexCoordinates.cached(0, 1)
                     }
                 }
             }
@@ -251,7 +251,7 @@ class CoordinatesTest : DescribeSpec({
         describe("hexagonal - even-q") {
             it("should be reversible") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val evenQCoordinates = hexCoordinates.toEvenQCoordinates()
                     (evenQCoordinates.toHexCoordinates()) shouldBe hexCoordinates
                 }
@@ -259,7 +259,7 @@ class CoordinatesTest : DescribeSpec({
 
             it("should convert correctly") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val evenQCoordinates = hexCoordinates.toEvenQCoordinates()
                     evenQCoordinates.col shouldBe q
                     evenQCoordinates.row shouldBe r + (q + (q and 1)) / 2
@@ -270,7 +270,7 @@ class CoordinatesTest : DescribeSpec({
         describe("hexagonal - odd-q") {
             it("should be reversible") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val oddQCoordinates = hexCoordinates.toOddQCoordinates()
                     (oddQCoordinates.toHexCoordinates()) shouldBe hexCoordinates
                 }
@@ -278,7 +278,7 @@ class CoordinatesTest : DescribeSpec({
 
             it("should convert correctly") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val oddQCoordinates = hexCoordinates.toOddQCoordinates()
                     oddQCoordinates.col shouldBe q
                     oddQCoordinates.row shouldBe r + (q - (q and 1)) / 2
@@ -289,7 +289,7 @@ class CoordinatesTest : DescribeSpec({
         describe("hexagonal - even-r") {
             it("should be reversible") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val evenRCoordinates = hexCoordinates.toEvenRCoordinates()
                     (evenRCoordinates.toHexCoordinates()) shouldBe hexCoordinates
                 }
@@ -297,7 +297,7 @@ class CoordinatesTest : DescribeSpec({
 
             it("should convert correctly") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val evenRCoordinates = hexCoordinates.toEvenRCoordinates()
                     evenRCoordinates.col shouldBe q + (r + (r and 1)) / 2
                     evenRCoordinates.row shouldBe r
@@ -308,7 +308,7 @@ class CoordinatesTest : DescribeSpec({
         describe("hexagonal - odd-r") {
             it("should be reversible") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val oddRCoordinates = hexCoordinates.toOddRCoordinates()
                     (oddRCoordinates.toHexCoordinates()) shouldBe hexCoordinates
                 }
@@ -316,7 +316,7 @@ class CoordinatesTest : DescribeSpec({
 
             it("should convert correctly") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val oddRCoordinates = hexCoordinates.toOddRCoordinates()
                     oddRCoordinates.col shouldBe q + (r - (r and 1)) / 2
                     oddRCoordinates.row shouldBe r
@@ -327,7 +327,7 @@ class CoordinatesTest : DescribeSpec({
         describe("hexagonal - double-height") {
             it("should be reversible") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val doubleHeightCoordinates = hexCoordinates.toDoubleHeightCoordinates()
                     (doubleHeightCoordinates.toHexCoordinates()) shouldBe hexCoordinates
                 }
@@ -335,7 +335,7 @@ class CoordinatesTest : DescribeSpec({
 
             it("should convert correctly") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val doubleHeightCoordinates = hexCoordinates.toDoubleHeightCoordinates()
                     doubleHeightCoordinates.col shouldBe q
                     doubleHeightCoordinates.row shouldBe r * 2 + q
@@ -346,7 +346,7 @@ class CoordinatesTest : DescribeSpec({
         describe("hexagonal - double-width") {
             it("should be reversible") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val doubleWidthCoordinates = hexCoordinates.toDoubleWidthCoordinates()
                     (doubleWidthCoordinates.toHexCoordinates()) shouldBe hexCoordinates
                 }
@@ -354,7 +354,7 @@ class CoordinatesTest : DescribeSpec({
 
             it("should convert correctly") {
                 checkAll(gen, gen) { q, r ->
-                    val hexCoordinates = HexCoordinates.from(q, r)
+                    val hexCoordinates = HexCoordinates.cached(q, r)
                     val doubleWidthCoordinates = hexCoordinates.toDoubleWidthCoordinates()
                     doubleWidthCoordinates.col shouldBe q * 2 + r
                     doubleWidthCoordinates.row shouldBe r

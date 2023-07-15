@@ -54,7 +54,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
         val result = mutableSetOf<HexCoordinates>()
 
         lineOfSight(from, to, radius, doesBlockVision) { q: Int, r: Int ->
-            result.add(HexCoordinates.from(q, r))
+            result.add(HexCoordinates.cached(q, r))
         }
 
         return result
@@ -177,7 +177,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
         val result = mutableSetOf<HexCoordinates>()
 
         fieldOfView(from, doesBlockVision) { q, r ->
-            result.add(HexCoordinates.from(q, r))
+            result.add(HexCoordinates.cached(q, r))
         }
 
         return result

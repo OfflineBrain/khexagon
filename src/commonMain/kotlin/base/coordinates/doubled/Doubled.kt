@@ -33,7 +33,7 @@ data class DoubleWidthCoordinates(val col: Int, val row: Int) : Coordinates<Doub
     fun toHexCoordinates(): HexCoordinates {
         val q = (col - row) / 2
         val r = row
-        return HexCoordinates.from(q, r)
+        return HexCoordinates.cached(q, r)
     }
 
     companion object {
@@ -77,7 +77,7 @@ data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates<Dou
     fun toHexCoordinates(): HexCoordinates {
         val q = col
         val r = (row - col) / 2
-        return HexCoordinates.from(q, r)
+        return HexCoordinates.cached(q, r)
     }
 
     companion object {

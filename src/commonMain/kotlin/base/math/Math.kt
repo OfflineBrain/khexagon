@@ -53,7 +53,7 @@ fun circle(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int)
  */
 fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -> Unit) {
     val opposite = HexCoordinates.directions[4]
-    var hex = HexCoordinates.from(originQ, originR) + HexCoordinates.from(opposite.q * radius, opposite.r * radius)
+    var hex = HexCoordinates.cached(originQ, originR) + HexCoordinates.cached(opposite.q * radius, opposite.r * radius)
 
     for (direction in HexCoordinates.directions) {
         for (j in 0..radius) {
@@ -189,5 +189,5 @@ fun hexRound(q: Float, r: Float): HexCoordinates {
         rInt = -qInt - sInt
     }
 
-    return HexCoordinates.from(qInt, rInt)
+    return HexCoordinates.cached(qInt, rInt)
 }

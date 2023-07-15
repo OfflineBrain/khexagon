@@ -107,7 +107,7 @@ typealias CubeCoordinates = HexCoordinates
  *  A data class representing a point in a hexagonal grid using cube coordinates (q, r, s).
  * The [s] coordinate is calculated based on [q] and [r] as `-q - r`.
  */
-class HexCoordinates private constructor(override val q: Int, override val r: Int) : Coordinates<HexCoordinates>,
+data class HexCoordinates(override val q: Int, override val r: Int) : Coordinates<HexCoordinates>,
     FromHexCoordinates<HexCoordinates> {
     val s: Int
         get() = -q - r
@@ -137,11 +137,11 @@ class HexCoordinates private constructor(override val q: Int, override val r: In
     operator fun get(direction: Int) = directions[direction] + this
 
     operator fun minus(other: HexCoordinates): HexCoordinates {
-        return from(q - other.q, r - other.r)
+        return cached(q - other.q, r - other.r)
     }
 
     operator fun plus(other: HexCoordinates): HexCoordinates {
-        return from(q + other.q, r + other.r)
+        return cached(q + other.q, r + other.r)
     }
 
     fun toEvenQCoordinates(): EvenQCoordinates {
@@ -180,28 +180,6 @@ class HexCoordinates private constructor(override val q: Int, override val r: In
         return DoubleWidthCoordinates(col, row)
     }
 
-    override fun toString(): String {
-        return "[q=$q, r=$r, s=$s]"
-    }
-
-    override fun hashCode(): Int {
-        var result = q
-        result = 31 * result + r
-        return result
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is HexCoordinates) return false
-
-        if (q != other.q) return false
-        if (r != other.r) return false
-
-        return true
-    }
-
-    operator fun component1(): Int = q
-    operator fun component2(): Int = r
     operator fun component3(): Int = s
 
     companion object {
@@ -214,14 +192,9 @@ class HexCoordinates private constructor(override val q: Int, override val r: In
          * @param r Second hexagonal coordinate component.
          * @return Cached or new [HexCoordinates] instance.
          */
-        fun from(q: Int, r: Int): HexCoordinates {
+        fun cached(q: Int, r: Int): HexCoordinates {
             return cache.getOrPut(q to r) { HexCoordinates(q, r) }
         }
-
-        /**
-         * Alias for [from].
-         */
-        operator fun invoke(q: Int, r: Int): HexCoordinates = from(q, r)
 
         /**
          * List of [HexCoordinates] representing the six neighbor directions.

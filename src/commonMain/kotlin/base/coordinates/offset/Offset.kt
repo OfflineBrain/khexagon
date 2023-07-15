@@ -35,7 +35,7 @@ data class EvenQCoordinates(val col: Int, val row: Int) : Coordinates<EvenQCoord
     fun toHexCoordinates(): HexCoordinates {
         val q = col
         val r = row - (col + (col and 1)) / 2
-        return HexCoordinates.from(q, r)
+        return HexCoordinates.cached(q, r)
     }
 
     companion object {
@@ -76,7 +76,7 @@ data class EvenRCoordinates(val col: Int, val row: Int) : Coordinates<EvenRCoord
     fun toHexCoordinates(): HexCoordinates {
         val q = col - (row + (row and 1)) / 2
         val r = row
-        return HexCoordinates.from(q, r)
+        return HexCoordinates.cached(q, r)
     }
 
     companion object {
@@ -113,7 +113,7 @@ data class OddQCoordinates(val col: Int, val row: Int) : Coordinates<OddQCoordin
     fun toHexCoordinates(): HexCoordinates {
         val q = col
         val r = row - (col - (col and 1)) / 2
-        return HexCoordinates.from(q, r)
+        return HexCoordinates.cached(q, r)
     }
 
     companion object {
@@ -149,7 +149,7 @@ data class OddRCoordinates(val col: Int, val row: Int) : Coordinates<OddRCoordin
     fun toHexCoordinates(): HexCoordinates {
         val q = col - (row - (row and 1)) / 2
         val r = row
-        return HexCoordinates.from(q, r)
+        return HexCoordinates.cached(q, r)
     }
 
     companion object {
