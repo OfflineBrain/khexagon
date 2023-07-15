@@ -1,0 +1,29 @@
+name: "Publish"
+
+on:
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-lib:
+    needs: [ build-all-linux, test-native-windows, test-native-ios ]
+    runs-on: ubuntu-latest
+    env:
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Publish Multiplatform"
+        run: ./gradlew publishKotlinMultiplatformPublicationToSonatypeRepository
+      - name: "Publish JVM"
+        run: ./gradlew publishJvmPublicationToSonatypeRepository
+      - name: "Publish JS"
+        run: ./gradlew publishJsPublicationToSonatypeRepository
+      - name: "Publish Native"
+        run: ./gradlew publishNativePublicationToSonatypeRepository

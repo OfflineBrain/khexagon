@@ -1,4 +1,4 @@
-name: "Master Build"
+name: "Release Build and Publish"
 
 on:
   push:
