@@ -8,29 +8,36 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.shouldBe
 
+data class Point(
+    override val q: Int,
+    override val r: Int,
+    val walkable: Boolean = true,
+    val cost: Int = 1,
+) : AxisPoint {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Point) return false
+
+        if (q != other.q) return false
+        if (r != other.r) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = q
+        result = 31 * result + r
+        return result
+    }
+}
+
+
 @Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @DisplayName("Pathfinding")
 class PathfindingTest : DescribeSpec({
     context("A*") {
-        data class Point(override val q: Int, override val r: Int, val walkable: Boolean) : AxisPoint {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (other !is Point) return false
-
-                if (q != other.q) return false
-                if (r != other.r) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = q
-                result = 31 * result + r
-                return result
-            }
-        }
-
         data class TestCase(
+            val name: String,
             val from: Point,
             val to: Point,
             val map: Set<Point>,
@@ -55,6 +62,7 @@ class PathfindingTest : DescribeSpec({
         val testCases = listOf(
             // Case 1: Direct path between two points
             TestCase(
+                name = "Direct path",
                 from = Point(0, 0, walkable = true),
                 to = Point(0, 2, walkable = true),
                 map = setOf(
@@ -70,6 +78,7 @@ class PathfindingTest : DescribeSpec({
             ),
             // Case 2: Path around an obstacle
             TestCase(
+                name = "Path around an obstacle",
                 from = Point(0, 0, walkable = true),
                 to = Point(0, 2, walkable = true),
                 map = setOf(
@@ -88,6 +97,7 @@ class PathfindingTest : DescribeSpec({
             ),
             // Case 3: No path between two points
             TestCase(
+                name = "No path",
                 from = Point(0, 0, walkable = true),
                 to = Point(0, 2, walkable = true),
                 map = setOf(
@@ -100,6 +110,7 @@ class PathfindingTest : DescribeSpec({
                 expected = emptyList() // There is no path
             ),
             TestCase(
+                name = "Path around an complex obstacle",
                 from = Point(5, 5, walkable = true),
                 to = Point(13, 13, walkable = true),
                 map = setOf(
@@ -140,18 +151,38 @@ class PathfindingTest : DescribeSpec({
                     Point(12, 13, walkable = true),
                     Point(13, 13, walkable = true)
                 )
+            ),
+            TestCase(
+                name = "Path around an field with high cost",
+                from = Point(0, 0, walkable = true),
+                to = Point(2, 0, walkable = true),
+                map = setOf(
+                    Point(0, 0, walkable = true, cost = 1),
+                    Point(1, 0, walkable = true, cost = 3), // High cost path
+                    Point(2, 0, walkable = true, cost = 1),
+                    Point(0, 1, walkable = true, cost = 1), // Low cost alternative path
+                    Point(1, 1, walkable = true, cost = 1), // Low cost alternative path
+                    Point(2, 1, walkable = true, cost = 1)  // Low cost alternative path
+                ),
+                expected = listOf(
+                    Point(0, 0, walkable = true, cost = 1),
+                    Point(0, 1, walkable = true, cost = 1),
+                    Point(1, 1, walkable = true, cost = 1),
+                    Point(2, 0, walkable = true, cost = 1)
+                )
             )
         )
 
 
         testCases.forEach { testCase ->
-            it("find path from ${testCase.from} to ${testCase.to}") {
+            it(testCase.name) {
                 val result = aStar(
                     from = testCase.from,
                     to = testCase.to,
                     neighbors = neighborsProvider(testCase.map),
                     isWalkable = { it.walkable },
-                    heuristic = { a, b -> a distanceTo b }
+                    heuristic = { a, b -> a distanceTo b },
+                    movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
                 )
                 result shouldBe testCase.expected
             }
@@ -161,33 +192,33 @@ class PathfindingTest : DescribeSpec({
 
 class AccessibilityTrieTest : DescribeSpec({
     describe("AccessibilityTrie") {
-        data class TestAxisPoint(override val q: Int, override val r: Int) : AxisPoint
 
-        val origin = TestAxisPoint(0, 0)
-        val heuristic: (TestAxisPoint, TestAxisPoint) -> Int = { a, b ->
+        val origin = Point(0, 0)
+        val heuristic: (Point, Point) -> Int = { a, b ->
             a distanceTo b
         }
 
+        val neighbors: (Point) -> List<Point> = { point ->
+            listOf(
+                Point(point.q + 1, point.r),       // Right
+                Point(point.q + 1, point.r - 1),  // Top Right
+                Point(point.q, point.r - 1),      // Top Left
+                Point(point.q - 1, point.r),      // Left
+                Point(point.q - 1, point.r + 1),  // Bottom Left
+                Point(point.q, point.r + 1)       // Bottom Right
+            )
+        }
         it("Builds correct AccessMap") {
-            val walkable = mutableSetOf<TestAxisPoint>()
+            val walkable = mutableSetOf<Point>()
             circle(radius = 3) { q, r ->
-                walkable.add(TestAxisPoint(q, r))
+                walkable.add(Point(q, r))
             }
             val expectedAccessibility = walkable - origin
 
             val trie = AccessibilityTrie(
                 origin = origin,
                 maxMoveCost = 3,
-                neighbors = { point ->
-                    listOf(
-                        TestAxisPoint(point.q + 1, point.r),       // Right
-                        TestAxisPoint(point.q + 1, point.r - 1),  // Top Right
-                        TestAxisPoint(point.q, point.r - 1),      // Top Left
-                        TestAxisPoint(point.q - 1, point.r),      // Left
-                        TestAxisPoint(point.q - 1, point.r + 1),  // Bottom Left
-                        TestAxisPoint(point.q, point.r + 1)       // Bottom Right
-                    )
-                },
+                neighbors = neighbors,
                 isWalkable = { walkable.contains(it) },
                 heuristic = heuristic
             )
@@ -199,21 +230,50 @@ class AccessibilityTrieTest : DescribeSpec({
             val trie = AccessibilityTrie(
                 origin = origin,
                 maxMoveCost = 2,
-                neighbors = { point ->
-                    listOf(
-                        TestAxisPoint(point.q + 1, point.r),       // Right
-                        TestAxisPoint(point.q + 1, point.r - 1),  // Top Right
-                        TestAxisPoint(point.q, point.r - 1),      // Top Left
-                        TestAxisPoint(point.q - 1, point.r),      // Left
-                        TestAxisPoint(point.q - 1, point.r + 1),  // Bottom Left
-                        TestAxisPoint(point.q, point.r + 1)       // Bottom Right
-                    )
-                },
+                neighbors = neighbors,
                 isWalkable = { true },
                 heuristic = heuristic
             )
-            val point = TestAxisPoint(1, 1)
-            trie[point] shouldBe listOf(TestAxisPoint(0, 0), TestAxisPoint(0, 1))
+            val point = Point(1, 1)
+            trie[point] shouldBe listOf(Point(0, 0), Point(0, 1), point)
+        }
+
+        it("Finds shortest path considering move cost") {
+            val highCostPoints = setOf(Point(0, 1, true, 10), Point(1, 0, true, 10))
+            val target = Point(1, 1)
+
+            val walkable = mutableSetOf<Point>()
+            circle(radius = 3) { q, r ->
+                val element = Point(q, r)
+                if (highCostPoints.contains(element).not()) {
+                    print(element)
+                    walkable.add(element)
+                }
+            }
+            walkable.addAll(highCostPoints)
+
+
+            val trie = AccessibilityTrie(
+                origin = origin,
+                maxMoveCost = 5,
+                neighbors = { point ->
+                    neighbors(point).mapNotNull { n -> walkable.find { n == it } }
+                },
+                isWalkable = { walkable.contains(it) },
+                heuristic = heuristic,
+                movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
+            )
+
+            val path = trie[target]
+            val expectedPath = listOf(
+                Point(0, 0),  // Original starting point
+                Point(-1, 1),
+                Point(-1, 2),
+                Point(0, 2),
+                target // Final destination
+            )
+
+            path shouldBe expectedPath
         }
     }
 })

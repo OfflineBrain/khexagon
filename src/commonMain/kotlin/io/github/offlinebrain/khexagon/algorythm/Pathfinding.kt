@@ -10,6 +10,7 @@ import io.github.offlinebrain.khexagon.coordinates.AxisPoint
  * @param [neighbors] A function that takes a point and returns a list of its neighboring points.
  * @param [isWalkable] A function that takes a point and returns whether the point can be traversed or not.
  * @param [heuristic] A function that estimates the distance between two points.
+ * @param [movementCost] A function that calculates the exact movement cost between two points. By default, it returns a constant cost of 1.0 for any pair of points or 0.0 if points are equal.
  * @return a list of points representing the shortest path from [from] to [to] based on the provided functions. Returns an empty list if no path is found.
  */
 fun <T> aStar(
@@ -17,13 +18,13 @@ fun <T> aStar(
     to: T,
     neighbors: (T) -> List<T>,
     isWalkable: (T) -> Boolean,
-    heuristic: (T, T) -> Int
+    heuristic: (T, T) -> Int,
+    movementCost: (T, T) -> Double = { a, b -> if (a == b) 0.0 else 1.0 },
 ): List<T> where T : AxisPoint {
     if (!isWalkable(from) || !isWalkable(to)) return emptyList()
     if (from.q == to.q && from.r == to.r) return listOf(from)
 
-    val moveCost = 1
-
+    val moveCost = movementCost(from, from)
     val openSet = mutableListOf(from to moveCost)
     val costs = mutableMapOf(from to moveCost)
     val path = mutableMapOf<T, T>()
@@ -36,7 +37,7 @@ fun <T> aStar(
 
         neighbors(current.first).filter { isWalkable(it) }.forEach { neighbor ->
             val previousCost = costs[neighbor]
-            val newCost = (costs[current.first] ?: 0) + moveCost
+            val newCost = (costs[current.first] ?: 0.0) + movementCost(current.first, neighbor)
             if (previousCost == null || newCost < previousCost) {
                 costs[neighbor] = newCost
                 val priority = newCost + heuristic(current.first, neighbor)
@@ -67,6 +68,7 @@ fun <T> aStar(
  * @property neighbors A function that takes a point and returns a list of its neighboring points.
  * @property isWalkable A function that takes a point and returns whether it's traversable.
  * @property heuristic A heuristic function to estimate the distance between two points.
+ * @property movementCost A function that calculates the exact movement cost between two points. By default, it returns a constant cost of 1.0 for any pair of points or 0.0 if points are equal.
  */
 data class AccessibilityTrie<T>(
     val origin: T,
@@ -74,6 +76,7 @@ data class AccessibilityTrie<T>(
     val neighbors: (T) -> List<T>,
     val isWalkable: (T) -> Boolean,
     val heuristic: (T, T) -> Int,
+    val movementCost: (T, T) -> Double = { a, b -> if (a == b) 0.0 else 1.0 },
 ) where T : AxisPoint {
     private val accessMap: MutableMap<T, T> = mutableMapOf()
 
@@ -96,8 +99,9 @@ data class AccessibilityTrie<T>(
 
         if (!isWalkable(origin)) return
 
-        val openSet = mutableListOf(origin to 0)
-        val costs = mutableMapOf(origin to 0)
+        val moveCost = movementCost(origin, origin)
+        val openSet = mutableListOf(origin to moveCost)
+        val costs = mutableMapOf(origin to moveCost)
 
         while (openSet.isNotEmpty()) {
             val current = openSet.removeLast()
@@ -107,7 +111,7 @@ data class AccessibilityTrie<T>(
 
             neighbors(current.first).filter { isWalkable(it) }.forEach { neighbor ->
                 val previousCost = costs[neighbor]
-                val newCost = (costs[current.first] ?: 0) + 1
+                val newCost = (costs[current.first] ?: 0.0) + movementCost(current.first, neighbor)
                 if (previousCost == null || newCost < previousCost) {
                     costs[neighbor] = newCost
                     val priority = newCost + heuristic(current.first, neighbor)
@@ -134,6 +138,7 @@ data class AccessibilityTrie<T>(
 
         val result = mutableListOf<T>()
         var backward: T? = accessMap[point] ?: return result
+        result.add(point)
         while (backward != null) {
             result.add(backward)
             backward = accessMap[backward]
