@@ -7,12 +7,43 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.shouldBe
 
-data class TestAxisPoint(override val q: Int, override val r: Int) : AxisPoint
+data class TestAxisPoint(
+    override val q: Int,
+    override val r: Int,
+    val cost: Int = 1,
+) : AxisPoint {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TestAxisPoint) return false
+
+        if (q != other.q) return false
+        if (r != other.r) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = q
+        result = 31 * result + r
+        return result
+    }
+}
 
 class AccessibilityTrieTest : StringSpec({
     val origin = TestAxisPoint(0, 0)
     val heuristic: (TestAxisPoint, TestAxisPoint) -> Int = { a, b ->
         a distanceTo b
+    }
+
+    val neighbors: (TestAxisPoint) -> List<TestAxisPoint> = { point ->
+        listOf(
+            TestAxisPoint(point.q + 1, point.r),
+            TestAxisPoint(point.q + 1, point.r - 1),
+            TestAxisPoint(point.q, point.r - 1),
+            TestAxisPoint(point.q - 1, point.r),
+            TestAxisPoint(point.q - 1, point.r + 1),
+            TestAxisPoint(point.q, point.r + 1)
+        )
     }
 
     "Builds correct AccessMap" {
@@ -25,16 +56,7 @@ class AccessibilityTrieTest : StringSpec({
         val trie = AccessibilityTrie(
             origin = origin,
             maxMoveCost = 3,
-            neighbors = { point ->
-                listOf(
-                    TestAxisPoint(point.q + 1, point.r),
-                    TestAxisPoint(point.q + 1, point.r - 1),
-                    TestAxisPoint(point.q, point.r - 1),
-                    TestAxisPoint(point.q - 1, point.r),
-                    TestAxisPoint(point.q - 1, point.r + 1),
-                    TestAxisPoint(point.q, point.r + 1)
-                )
-            },
+            neighbors = neighbors,
             isWalkable = { walkable.contains(it) },
             heuristic = heuristic
         )
@@ -46,25 +68,59 @@ class AccessibilityTrieTest : StringSpec({
         val trie = AccessibilityTrie(
             origin = origin,
             maxMoveCost = 2,
-            neighbors = { point ->
-                listOf(
-                    TestAxisPoint(point.q + 1, point.r),
-                    TestAxisPoint(point.q + 1, point.r - 1),
-                    TestAxisPoint(point.q, point.r - 1),
-                    TestAxisPoint(point.q - 1, point.r),
-                    TestAxisPoint(point.q - 1, point.r + 1),
-                    TestAxisPoint(point.q, point.r + 1)
-                )
-            },
+            neighbors = neighbors,
             isWalkable = { true },
             heuristic = heuristic
         )
         val point = TestAxisPoint(1, 1)
-        trie[point] shouldBe listOf(TestAxisPoint(0, 0), TestAxisPoint(0, 1))
+        trie[point] shouldBe listOf(TestAxisPoint(0, 0), TestAxisPoint(0, 1), point)
+    }
+
+    "Finds shortest path considering move cost" {
+        val highCostPoints = setOf(TestAxisPoint(0, 1, 10), TestAxisPoint(1, 0, 10))
+        val target = TestAxisPoint(1, 1)
+
+        val walkable = mutableSetOf<TestAxisPoint>()
+        circle(radius = 3) { q, r ->
+            val element = TestAxisPoint(q, r)
+            if (highCostPoints.contains(element).not()) {
+                print(element)
+                walkable.add(element)
+            }
+        }
+        walkable.addAll(highCostPoints)
+
+
+        val trie = AccessibilityTrie(
+            origin = origin,
+            maxMoveCost = 5,
+            neighbors = { point ->
+                neighbors(point).mapNotNull { n -> walkable.find { n == it } }
+            },
+            isWalkable = { walkable.contains(it) },
+            heuristic = heuristic,
+            movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
+        )
+
+        val path = trie[target]
+        val expectedPath = listOf(
+            TestAxisPoint(0, 0),  // Original starting point
+            TestAxisPoint(-1, 1),
+            TestAxisPoint(-1, 2),
+            TestAxisPoint(0, 2),
+            target // Final destination
+        )
+
+        path shouldBe expectedPath
     }
 })
 
-data class PathTestPoint(override val q: Int, override val r: Int, val walkable: Boolean) : AxisPoint {
+data class PathTestPoint(
+    override val q: Int,
+    override val r: Int,
+    val walkable: Boolean,
+    val cost: Int = 1,
+) : AxisPoint {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PathTestPoint) return false
@@ -185,6 +241,24 @@ class PathfindingTest : StringSpec({
                 PathTestPoint(12, 13, walkable = true),
                 PathTestPoint(13, 13, walkable = true)
             )
+        ),
+        TestCase(
+            from = PathTestPoint(0, 0, walkable = true),
+            to = PathTestPoint(2, 0, walkable = true),
+            map = setOf(
+                PathTestPoint(0, 0, walkable = true, cost = 1),
+                PathTestPoint(1, 0, walkable = true, cost = 3), // High cost path
+                PathTestPoint(2, 0, walkable = true, cost = 1),
+                PathTestPoint(0, 1, walkable = true, cost = 1), // Low cost alternative path
+                PathTestPoint(1, 1, walkable = true, cost = 1), // Low cost alternative path
+                PathTestPoint(2, 1, walkable = true, cost = 1)  // Low cost alternative path
+            ),
+            expected = listOf(
+                PathTestPoint(0, 0, walkable = true, cost = 1),
+                PathTestPoint(0, 1, walkable = true, cost = 1),
+                PathTestPoint(1, 1, walkable = true, cost = 1),
+                PathTestPoint(2, 0, walkable = true, cost = 1)
+            )
         )
     )
 
@@ -199,7 +273,8 @@ class PathfindingTest : StringSpec({
                 to = testCase.to,
                 neighbors = neighborsProvider(testCase.map),
                 isWalkable = { it.walkable },
-                heuristic = { a, b -> a distanceTo b }
+                heuristic = { a, b -> a distanceTo b },
+                movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
             )
             result shouldBe testCase.expected
         }
