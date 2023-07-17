@@ -243,7 +243,7 @@ data class TrieNode(
     internal fun add(coordinates: AxisPoint, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) =
         add(coordinates.q, coordinates.r, radius, callback)
 
-    internal fun add(Q: Int, R: Int, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) {
+    internal fun add(destinationQ: Int, destinationR: Int, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) {
         fun losKetgen(x: Int, y: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
         var q = q
@@ -283,7 +283,7 @@ data class TrieNode(
             }
         }
 
-        bresenhamsLine(0, 0, Q, R, cb)
+        bresenhamsLine(0, 0, destinationQ, destinationR, cb)
     }
 
     /**
