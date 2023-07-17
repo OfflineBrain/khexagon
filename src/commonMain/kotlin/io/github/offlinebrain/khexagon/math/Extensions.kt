@@ -1,6 +1,5 @@
 package io.github.offlinebrain.khexagon.math
 
-import base.coordinates.*
 import io.github.offlinebrain.khexagon.coordinates.AxisPoint
 import io.github.offlinebrain.khexagon.coordinates.Coordinates
 import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
@@ -12,7 +11,7 @@ import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
  * @param other The other coordinate.
  * @return The distance.
  *
- * @see [base.math.distance]
+ * @see [io.github.offlinebrain.khexagon.math.distance]
  */
 infix fun <T : AxisPoint> T.distanceTo(other: AxisPoint): Int {
     return distance(this.q, this.r, other.q, other.r)
@@ -48,7 +47,7 @@ infix fun <T> T.lineTo(other: Coordinates<*>): List<T>
  * @param end The destination coordinate.
  * @return A list containing coordinates of each point on the line.
  *
- * @see [base.math.bresenhamsLine]
+ * @see [io.github.offlinebrain.khexagon.math.bresenhamsLine]
  */
 infix fun <T> T.bresenhamsLine(end: AxisPoint): List<T>
         where T : AxisPoint, T : FromHexCoordinates<T> {
@@ -66,7 +65,7 @@ infix fun <T> T.bresenhamsLine(end: AxisPoint): List<T>
  * @param radius The radius of the circular region.
  * @return A list of coordinates within the circular region.
  *
- * @see [base.math.circle]
+ * @see [io.github.offlinebrain.khexagon.math.circle]
  */
 fun <T> T.circle(radius: Int): List<T>
         where T : AxisPoint, T : FromHexCoordinates<T> {

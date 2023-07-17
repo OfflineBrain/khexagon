@@ -228,7 +228,7 @@ class SymmetricPreComputedVisionTries(private val radius: Int) {
  *  Data class defining a trie node for the SymmetricPreComputedVisionTries.
  *
  *  @param parent The parent node.
- *  @param q The (q) component of the coordinate in the hexagonal grid..
+ *  @param q The (q) component of the coordinate in the hexagonal grid.
  *  @param r The (r) component of the coordinate in the hexagonal grid.
  *  @param childrenIndices The indices of the children nodes.
  */
