@@ -1,4 +1,6 @@
-#  WIP: KHexagon Library
+# KHexagon Library
+
+[![Qodana](https://github.com/OfflineBrain/khexagon/actions/workflows/code_quality.yaml/badge.svg)](https://github.com/OfflineBrain/khexagon/actions/workflows/code_quality.yaml)
 
 ## Overview
 
