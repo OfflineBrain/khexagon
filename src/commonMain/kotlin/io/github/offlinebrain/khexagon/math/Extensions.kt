@@ -1,6 +1,10 @@
-package base.math
+package io.github.offlinebrain.khexagon.math
 
 import base.coordinates.*
+import io.github.offlinebrain.khexagon.coordinates.AxisPoint
+import io.github.offlinebrain.khexagon.coordinates.Coordinates
+import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
 
 /**
  * Calculates the hexagonal distance from this coordinate to another.

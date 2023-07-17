@@ -1,9 +1,9 @@
-import algorythm.SPCVT
-import base.coordinates.HexCoordinates
-import base.math.bresenhamsLine
-import base.math.circle
-import base.math.distance
-import base.math.distanceTo
+import io.github.offlinebrain.khexagon.algorythm.SPCVT
+import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.math.bresenhamsLine
+import io.github.offlinebrain.khexagon.math.circle
+import io.github.offlinebrain.khexagon.math.distance
+import io.github.offlinebrain.khexagon.math.distanceTo
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs

@@ -1,8 +1,8 @@
-package samples
+package io.github.offlinebrain.khexagon.samples
 
-import base.math.circle
-import base.coordinates.HexCoordinates
-import base.math.ring
+import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.math.circle
+import io.github.offlinebrain.khexagon.math.ring
 
 
 fun mathCircleCollect() {

@@ -1,6 +1,6 @@
-package algorythm
+package io.github.offlinebrain.khexagon.algorythm
 
-import base.coordinates.AxisPoint
+import io.github.offlinebrain.khexagon.coordinates.AxisPoint
 
 fun <T> aStar(
     from: T,

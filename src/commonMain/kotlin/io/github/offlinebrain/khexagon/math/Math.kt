@@ -1,7 +1,7 @@
-package base.math
+package io.github.offlinebrain.khexagon.math
 
-import base.coordinates.FractionalHexCoordinates
-import base.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.FractionalHexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
 import kotlin.math.*
 
 

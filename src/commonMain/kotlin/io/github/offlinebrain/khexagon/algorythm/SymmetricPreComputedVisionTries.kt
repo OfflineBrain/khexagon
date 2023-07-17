@@ -1,10 +1,10 @@
-package algorythm
+package io.github.offlinebrain.khexagon.algorythm
 
-import base.coordinates.AxisPoint
-import base.coordinates.HexCoordinates
-import base.math.bresenhamsLine
-import base.math.circle
-import base.math.distance
+import io.github.offlinebrain.khexagon.coordinates.AxisPoint
+import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.math.bresenhamsLine
+import io.github.offlinebrain.khexagon.math.circle
+import io.github.offlinebrain.khexagon.math.distance
 
 typealias SPCVT = SymmetricPreComputedVisionTries
 

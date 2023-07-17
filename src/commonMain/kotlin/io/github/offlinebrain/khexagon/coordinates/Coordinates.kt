@@ -1,13 +1,13 @@
-package base.coordinates
+package io.github.offlinebrain.khexagon.coordinates
 
-import base.coordinates.Coordinates.Flat
-import base.coordinates.Coordinates.Pointy
-import base.coordinates.doubled.DoubleHeightCoordinates
-import base.coordinates.doubled.DoubleWidthCoordinates
-import base.coordinates.offset.EvenQCoordinates
-import base.coordinates.offset.EvenRCoordinates
-import base.coordinates.offset.OddQCoordinates
-import base.coordinates.offset.OddRCoordinates
+import io.github.offlinebrain.khexagon.coordinates.Coordinates.Flat
+import io.github.offlinebrain.khexagon.coordinates.Coordinates.Pointy
+import io.github.offlinebrain.khexagon.coordinates.doubled.DoubleHeightCoordinates
+import io.github.offlinebrain.khexagon.coordinates.doubled.DoubleWidthCoordinates
+import io.github.offlinebrain.khexagon.coordinates.offset.EvenQCoordinates
+import io.github.offlinebrain.khexagon.coordinates.offset.EvenRCoordinates
+import io.github.offlinebrain.khexagon.coordinates.offset.OddQCoordinates
+import io.github.offlinebrain.khexagon.coordinates.offset.OddRCoordinates
 
 
 /**
@@ -97,7 +97,7 @@ interface FromHexCoordinates<T> where T : Coordinates<T> {
 }
 
 data class FractionalHexCoordinates(val q: Float, val r: Float, val s: Float) {
-    fun hexRound(): HexCoordinates = base.math.hexRound(q, r)
+    fun hexRound(): HexCoordinates = io.github.offlinebrain.khexagon.math.hexRound(q, r)
 }
 
 typealias AxialCoordinates = HexCoordinates

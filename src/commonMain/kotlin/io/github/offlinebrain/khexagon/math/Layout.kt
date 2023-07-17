@@ -1,4 +1,4 @@
-package base.math
+package io.github.offlinebrain.khexagon.math
 
 import kotlin.math.sqrt
 
@@ -22,7 +22,6 @@ data class Orientation(
     }
 }
 
-data class Point(val x: Float = 0.0f, val y: Float = 0.0f) {
-}
+data class Point(val x: Float = 0.0f, val y: Float = 0.0f)
 
 data class Layout(val orientation: Orientation = Orientation(), val size: Point = Point(), val origin: Point = Point())

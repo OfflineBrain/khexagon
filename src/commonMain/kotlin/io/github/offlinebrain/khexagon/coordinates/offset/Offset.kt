@@ -1,8 +1,8 @@
-package base.coordinates.offset
+package io.github.offlinebrain.khexagon.coordinates.offset
 
-import base.coordinates.Coordinates
-import base.coordinates.FromHexCoordinates
-import base.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.Coordinates
+import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
 
 
 /**
