@@ -1,4 +1,4 @@
-# Package base.coordinates
+# Package io.github.offlinebrain.khexagon.coordinates
 
 Provides the classes and interfaces for representing different coordinates in hexagonal
 grid layouts. The key components of this package are:
@@ -14,7 +14,7 @@ grid layouts. The key components of this package are:
   [Coordinates] interface. These classes are used to represent
   different types of hexagonal layouts, like offset (even or odd) or doubled (width or height) coordinates.
 
-# Package base.coordinates.offset
+# Package io.github.offlinebrain.khexagon.coordinates.offset
 
 - **Offset Coordinates**: These are representations beneficial for graphical or UI elements in hexagonal grid layouts.
   Based on the type of offset (Odd/Even R/Q), the rows or columns are offset accordingly. The type of offset coordinate
@@ -33,7 +33,7 @@ utilized in the [HexCoordinates] class, which maps hexagonal grid coordinates us
 three axes [q, r, s], forming a cube
 structure.
 
-# Package base.coordinates.doubled
+# Package io.github.offlinebrain.khexagon.coordinates.doubled
 
 This package provides classes to represent doubled coordinates in a hexagonal grid layout. The classes included in this
 package are:
@@ -46,7 +46,7 @@ package are:
 
 Both classes enforce the constraint `(col + row) % 2 == 0`.
 
-# Package base.math
+# Package io.github.offlinebrain.khexagon.math
 
 The package contains utility functions and classes that aid in performing various mathematical operations
 specific to the program's focus on coordinates and shapes in a hexagonal grid. Here's an abstract overview of the
