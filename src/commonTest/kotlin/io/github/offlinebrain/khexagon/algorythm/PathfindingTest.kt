@@ -1,9 +1,11 @@
 package io.github.offlinebrain.khexagon.algorythm
 
 import io.github.offlinebrain.khexagon.coordinates.AxisPoint
+import io.github.offlinebrain.khexagon.math.circle
 import io.github.offlinebrain.khexagon.math.distanceTo
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.shouldBe
 
 @Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
@@ -153,6 +155,65 @@ class PathfindingTest : DescribeSpec({
                 )
                 result shouldBe testCase.expected
             }
+        }
+    }
+})
+
+class AccessibilityTrieTest : DescribeSpec({
+    describe("AccessibilityTrie") {
+        data class TestAxisPoint(override val q: Int, override val r: Int) : AxisPoint
+
+        val origin = TestAxisPoint(0, 0)
+        val heuristic: (TestAxisPoint, TestAxisPoint) -> Int = { a, b ->
+            a distanceTo b
+        }
+
+        it("Builds correct AccessMap") {
+            val walkable = mutableSetOf<TestAxisPoint>()
+            circle(radius = 3) { q, r ->
+                walkable.add(TestAxisPoint(q, r))
+            }
+            val expectedAccessibility = walkable - origin
+
+            val trie = AccessibilityTrie(
+                origin = origin,
+                maxMoveCost = 3,
+                neighbors = { point ->
+                    listOf(
+                        TestAxisPoint(point.q + 1, point.r),       // Right
+                        TestAxisPoint(point.q + 1, point.r - 1),  // Top Right
+                        TestAxisPoint(point.q, point.r - 1),      // Top Left
+                        TestAxisPoint(point.q - 1, point.r),      // Left
+                        TestAxisPoint(point.q - 1, point.r + 1),  // Bottom Left
+                        TestAxisPoint(point.q, point.r + 1)       // Bottom Right
+                    )
+                },
+                isWalkable = { walkable.contains(it) },
+                heuristic = heuristic
+            )
+            trie.accessible shouldBeSameSizeAs expectedAccessibility
+            trie.accessible shouldBe expectedAccessibility
+        }
+
+        it("Retrieves path correctly") {
+            val trie = AccessibilityTrie(
+                origin = origin,
+                maxMoveCost = 2,
+                neighbors = { point ->
+                    listOf(
+                        TestAxisPoint(point.q + 1, point.r),       // Right
+                        TestAxisPoint(point.q + 1, point.r - 1),  // Top Right
+                        TestAxisPoint(point.q, point.r - 1),      // Top Left
+                        TestAxisPoint(point.q - 1, point.r),      // Left
+                        TestAxisPoint(point.q - 1, point.r + 1),  // Bottom Left
+                        TestAxisPoint(point.q, point.r + 1)       // Bottom Right
+                    )
+                },
+                isWalkable = { true },
+                heuristic = heuristic
+            )
+            val point = TestAxisPoint(1, 1)
+            trie[point] shouldBe listOf(TestAxisPoint(0, 0), TestAxisPoint(0, 1))
         }
     }
 })
