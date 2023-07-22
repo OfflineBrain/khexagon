@@ -1,6 +1,5 @@
 package io.github.offlinebrain.khexagon.algorythm
 
-import io.github.offlinebrain.khexagon.coordinates.AxisPoint
 import io.github.offlinebrain.khexagon.math.circle
 import io.github.offlinebrain.khexagon.math.distanceTo
 import io.kotest.core.annotation.DisplayName
@@ -13,7 +12,17 @@ data class Point(
     override val r: Int,
     val walkable: Boolean = true,
     val cost: Int = 1,
-) : AxisPoint {
+) : PathTile<Point> {
+    override fun isWalkable(): Boolean = walkable
+
+    override fun heuristicTo(to: Point): Int {
+        return distanceTo(to)
+    }
+
+    override fun moveCostTo(to: Point): Double {
+        return if (this == to) 0.0 else to.cost.toDouble()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Point) return false
@@ -158,11 +167,11 @@ class PathfindingTest : DescribeSpec({
                 to = Point(2, 0, walkable = true),
                 map = setOf(
                     Point(0, 0, walkable = true, cost = 1),
-                    Point(1, 0, walkable = true, cost = 3), // High cost path
+                    Point(1, 0, walkable = true, cost = 3),
                     Point(2, 0, walkable = true, cost = 1),
-                    Point(0, 1, walkable = true, cost = 1), // Low cost alternative path
-                    Point(1, 1, walkable = true, cost = 1), // Low cost alternative path
-                    Point(2, 1, walkable = true, cost = 1)  // Low cost alternative path
+                    Point(0, 1, walkable = true, cost = 1),
+                    Point(1, 1, walkable = true, cost = 1),
+                    Point(2, 1, walkable = true, cost = 1)
                 ),
                 expected = listOf(
                     Point(0, 0, walkable = true, cost = 1),
@@ -220,7 +229,8 @@ class AccessibilityTrieTest : DescribeSpec({
                 maxMoveCost = 3,
                 neighbors = neighbors,
                 isWalkable = { walkable.contains(it) },
-                heuristic = heuristic
+                heuristic = heuristic,
+                movementCost = { a, b -> if (a == b) 0.0 else 1.0 },
             )
             trie.accessible shouldBeSameSizeAs expectedAccessibility
             trie.accessible shouldBe expectedAccessibility
@@ -232,7 +242,8 @@ class AccessibilityTrieTest : DescribeSpec({
                 maxMoveCost = 2,
                 neighbors = neighbors,
                 isWalkable = { true },
-                heuristic = heuristic
+                heuristic = heuristic,
+                movementCost = { a, b -> if (a == b) 0.0 else 1.0 },
             )
             val point = Point(1, 1)
             trie[point] shouldBe listOf(Point(0, 0), Point(0, 1), point)
@@ -274,6 +285,45 @@ class AccessibilityTrieTest : DescribeSpec({
             )
 
             path shouldBe expectedPath
+        }
+
+        describe("Invoke overloads") {
+            val highCostPoints = setOf(Point(0, 1, true, 10), Point(1, 0, true, 10))
+            val target = Point(1, 1)
+
+            val walkable = mutableSetOf<Point>()
+            circle(radius = 3) { q, r ->
+                val element = Point(q, r)
+                if (highCostPoints.contains(element).not()) {
+                    print(element)
+                    walkable.add(element)
+                }
+            }
+            walkable.addAll(highCostPoints)
+
+            val expectedPath = listOf(
+                Point(0, 0),  // Original starting point
+                Point(-1, 1),
+                Point(-1, 2),
+                Point(0, 2),
+                target // Final destination
+            )
+
+            describe("With [Walkable], [Heuristic] and [MovementCost] interfaces") {
+                val trie = AccessibilityTrie(
+                    origin = origin,
+                    maxMoveCost = 5,
+                    neighbors = { point ->
+                        neighbors(point).mapNotNull { n -> walkable.find { n == it } }
+                    },
+                )
+
+                val path = trie[target]
+                it("Should find the correct path") {
+                    path shouldBe expectedPath
+                }
+            }
+
         }
     }
 })
