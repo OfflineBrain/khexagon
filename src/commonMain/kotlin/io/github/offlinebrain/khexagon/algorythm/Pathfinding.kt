@@ -2,6 +2,20 @@ package io.github.offlinebrain.khexagon.algorythm
 
 import io.github.offlinebrain.khexagon.coordinates.AxisPoint
 
+interface PathTile<T> : AxisPoint, Walkable, MovementCost<T>, Heuristic<T>
+
+interface MovementCost<T> {
+    infix fun moveCostTo(to: T): Double
+}
+
+interface Walkable {
+    fun isWalkable(): Boolean
+}
+
+interface Heuristic<T> {
+    infix fun heuristicTo(to: T): Int
+}
+
 /**
  * Applies the A* pathfinding algorithm on a given graph to find the shortest path from the start point [from] to the destination [to].
  *
@@ -19,7 +33,7 @@ fun <T> aStar(
     neighbors: (T) -> List<T>,
     isWalkable: (T) -> Boolean,
     heuristic: (T, T) -> Int,
-    movementCost: (T, T) -> Double = { a, b -> if (a == b) 0.0 else 1.0 },
+    movementCost: (T, T) -> Double
 ): List<T> where T : AxisPoint {
     if (!isWalkable(from) || !isWalkable(to)) return emptyList()
     if (from.q == to.q && from.r == to.r) return listOf(from)
@@ -60,6 +74,13 @@ fun <T> aStar(
     return result.reversed()
 }
 
+fun <T> aStar(
+    from: T,
+    to: T,
+    neighbors: (T) -> List<T>,
+): List<T> where T : PathTile<T> =
+    aStar(from, to, neighbors, { it.isWalkable() }, { a, b -> a heuristicTo b }) { a, b -> a moveCostTo b }
+
 /**
  * A data class that implements a pathfinding algorithm on a graph represented by points of type `T` extending [AxisPoint].
  *
@@ -76,7 +97,7 @@ data class AccessibilityTrie<T>(
     val neighbors: (T) -> List<T>,
     val isWalkable: (T) -> Boolean,
     val heuristic: (T, T) -> Int,
-    val movementCost: (T, T) -> Double = { a, b -> if (a == b) 0.0 else 1.0 },
+    val movementCost: (T, T) -> Double
 ) where T : AxisPoint {
     private val accessMap: MutableMap<T, T> = mutableMapOf()
 
@@ -144,5 +165,21 @@ data class AccessibilityTrie<T>(
             backward = accessMap[backward]
         }
         return result.reversed()
+    }
+
+    companion object {
+        operator fun <T> invoke(
+            origin: T,
+            maxMoveCost: Int,
+            neighbors: (T) -> List<T>,
+        ): AccessibilityTrie<T> where T : PathTile<T> =
+            AccessibilityTrie(
+                origin,
+                maxMoveCost,
+                neighbors,
+                isWalkable = { it.isWalkable() },
+                heuristic = { a, b -> a heuristicTo b },
+                movementCost = { a, b -> a moveCostTo b }
+            )
     }
 }

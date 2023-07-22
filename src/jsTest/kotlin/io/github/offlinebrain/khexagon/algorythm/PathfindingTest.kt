@@ -58,7 +58,8 @@ class AccessibilityTrieTest : StringSpec({
             maxMoveCost = 3,
             neighbors = neighbors,
             isWalkable = { walkable.contains(it) },
-            heuristic = heuristic
+            heuristic = heuristic,
+            movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
         )
         trie.accessible shouldBeSameSizeAs expectedAccessibility
         trie.accessible shouldBe expectedAccessibility
@@ -70,7 +71,8 @@ class AccessibilityTrieTest : StringSpec({
             maxMoveCost = 2,
             neighbors = neighbors,
             isWalkable = { true },
-            heuristic = heuristic
+            heuristic = heuristic,
+            movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
         )
         val point = TestAxisPoint(1, 1)
         trie[point] shouldBe listOf(TestAxisPoint(0, 0), TestAxisPoint(0, 1), point)

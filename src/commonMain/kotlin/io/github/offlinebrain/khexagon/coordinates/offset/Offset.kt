@@ -4,6 +4,10 @@ import io.github.offlinebrain.khexagon.coordinates.Coordinates
 import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
 import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
 
+interface OffsetCoordinates<T> : Coordinates<T> where T : OffsetCoordinates<T> {
+    val col: Int
+    val row: Int
+}
 
 /**
  * Data class representing even-Q coordinates in a flat-topped hexagonal grid layout.
@@ -16,7 +20,7 @@ import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
  *
  * The [EvenQCoordinates] class can be particularly useful when dealing with UI elements or graphical representations where Cartesian coordinates (column and row) are more intuitive to work with.
  */
-data class EvenQCoordinates(val col: Int, val row: Int) : Coordinates<EvenQCoordinates>,
+data class EvenQCoordinates(override val col: Int, override val row: Int) : OffsetCoordinates<EvenQCoordinates>,
     FromHexCoordinates<EvenQCoordinates> {
     override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
@@ -62,7 +66,7 @@ data class EvenQCoordinates(val col: Int, val row: Int) : Coordinates<EvenQCoord
  *
  * The [EvenRCoordinates] can be particularly advantageous when working with graphical representations or user interface elements, where Cartesian coordinates (column and row) would be more straightforward and convenient.
  */
-data class EvenRCoordinates(val col: Int, val row: Int) : Coordinates<EvenRCoordinates>,
+data class EvenRCoordinates(override val col: Int, override val row: Int) : OffsetCoordinates<EvenRCoordinates>,
     FromHexCoordinates<EvenRCoordinates> {
     override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
@@ -99,7 +103,7 @@ data class EvenRCoordinates(val col: Int, val row: Int) : Coordinates<EvenRCoord
  *
  * The [OddQCoordinates] class can be beneficial when working with UI elements or graphical representations where Cartesian coordinates are more practical.
  */
-data class OddQCoordinates(val col: Int, val row: Int) : Coordinates<OddQCoordinates>,
+data class OddQCoordinates(override val col: Int, override val row: Int) : OffsetCoordinates<OddQCoordinates>,
     FromHexCoordinates<OddQCoordinates> {
     override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
@@ -135,7 +139,7 @@ data class OddQCoordinates(val col: Int, val row: Int) : Coordinates<OddQCoordin
  *
  * The [OddRCoordinates] can be particularly advantageous when working with graphical representations or user interface elements, where Cartesian coordinates (column and row) would be more straightforward and convenient.
  */
-data class OddRCoordinates(val col: Int, val row: Int) : Coordinates<OddRCoordinates>,
+data class OddRCoordinates(override val col: Int, override val row: Int) : OffsetCoordinates<OddRCoordinates>,
     FromHexCoordinates<OddRCoordinates> {
     override val hex: HexCoordinates by lazy { toHexCoordinates() }
 
