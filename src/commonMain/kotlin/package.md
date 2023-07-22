@@ -1,3 +1,8 @@
+# Module khexagon
+
+This module provides a set of classes and functions for working with hexagonal grids. It is based on
+the [Red Blob Games](https://www.redblobgames.com/grids/hexagons/) hexagonal grid guide.
+
 # Package io.github.offlinebrain.khexagon.coordinates
 
 Provides the classes and interfaces for representing different coordinates in hexagonal
@@ -49,11 +54,11 @@ Both classes enforce the constraint `(col + row) % 2 == 0`.
 # Package io.github.offlinebrain.khexagon.math
 
 The package contains utility functions and classes that aid in performing various mathematical operations
-specific to the program's focus on coordinates and shapes in a hexagonal grid. Here's an abstract overview of the
-package:
+specific to the program's focus on coordinates and shapes in a hexagonal grid:
 
 - **Bresenham's Line Algorithm Functions**: These functions, named `bresenhamsLine`, implement the Bresenham's line
-  generation algorithm. They can produce a symmetric line of coordinates between two points on a hexagonal grid.
+  generation algorithm. They can produce a symmetric line of coordinates between two points on a hexagonal grid. It's
+  slightly modified to be symmetric, so that the line is the same when drawn from either point.
 
 - **Line Drawing Functions**: The package includes functions like `T.lineTo` that use the Bresenham's line algorithm to
   draw lines between two given coordinates on a hexagonal grid.
@@ -65,3 +70,13 @@ package:
   or ring-like arrangement of coordinates around a given point on a hexagonal grid.
 
 Please refer to individual function documentation for more detailed explanations and examples of usage.
+
+# Package io.github.offlinebrain.khexagon.algorithm
+
+- **Path Finding and Node Representation**: The package provides efficient methods for graph traversal and path finding
+  using the A* search algorithm. This is implemented via aStar() function and AccessibilityTrie class. It also provides
+  extensible interfaces such as PathTile for flexible representation of graph nodes.
+
+- **Visibility Computations**: It includes the SymmetricPreComputedVisionTries class, which is used for pre-calculating
+  and handling operations related to line-of-sight (LoS) and field-of-view (FoV) on symmetric grids. It is based
+  on [denismr implementation](https://github.com/denismr/SymmetricPCVT).

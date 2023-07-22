@@ -2,16 +2,36 @@ package io.github.offlinebrain.khexagon.algorythm
 
 import io.github.offlinebrain.khexagon.coordinates.AxisPoint
 
+/**
+ * Represents a path tile with generic type `T`.
+ *
+ * @param T the type of objects that can be used for movement cost and heuristic calculations.
+ */
 interface PathTile<T> : AxisPoint, Walkable, MovementCost<T>, Heuristic<T>
 
+/**
+ * Provides an interface to calculate the movement cost to a certain location.
+ *
+ * Supposed to be used on adjacent locations.
+ *
+ * @param T the type of the destination location.
+ */
 interface MovementCost<T> {
     infix fun moveCostTo(to: T): Double
 }
 
+/**
+ * Provides an interface to determine if a path is walkable.
+ */
 interface Walkable {
     fun isWalkable(): Boolean
 }
 
+/**
+ * Provides an interface to calculate the heuristic value to a certain location.
+ *
+ * @param T the type of the destination location.
+ */
 interface Heuristic<T> {
     infix fun heuristicTo(to: T): Int
 }
