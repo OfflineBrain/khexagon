@@ -17,12 +17,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-all-linux:
+  assemble:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: "Assemble"
         run: ./gradlew assemble
+
+  test-all-linux:
+    needs: [ assemble ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: "Test JVM"
         run: ./gradlew jvmTest
       - name: "Test JS"
@@ -33,16 +43,22 @@ jobs:
         run: ./gradlew nativeTest
 
   test-native-windows:
+    needs: [ assemble ]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: "Test Native"
         run: ./gradlew nativeTest
 
   test-native-ios:
+    needs: [ assemble ]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: "Test Native"
         run: ./gradlew nativeTest
 
@@ -56,6 +72,8 @@ jobs:
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: "Publish Multiplatform"
         run: ./gradlew publish
 
@@ -67,6 +85,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
