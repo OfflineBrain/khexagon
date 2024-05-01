@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
       - name: "Assemble"
         run: ./gradlew assemble
 
@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
       - name: "Test JVM"
         run: ./gradlew jvmTest
       - name: "Test JS"
@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
       - name: "Test Native"
         run: ./gradlew nativeTest
 
@@ -58,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
       - name: "Test Native"
         run: ./gradlew nativeTest
 
@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
       - name: "Publish Multiplatform"
         run: ./gradlew publish
 
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
