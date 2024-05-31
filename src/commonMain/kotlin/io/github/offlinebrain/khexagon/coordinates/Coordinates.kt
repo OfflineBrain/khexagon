@@ -91,9 +91,6 @@ data class FractionalHexCoordinates(val q: Float, val r: Float, val s: Float) {
     fun hexRound(): HexCoordinates = io.github.offlinebrain.khexagon.math.hexRound(q, r)
 }
 
-typealias AxialCoordinates = HexCoordinates
-typealias CubeCoordinates = HexCoordinates
-
 /**
  *  A data class representing a point in a hexagonal grid using cube coordinates (q, r, s).
  * The [s] coordinate is calculated based on [q] and [r] as `-q - r`.

@@ -20,6 +20,7 @@ import io.kotest.property.checkAll
 import io.kotest.property.exhaustive.collection
 import kotlin.math.absoluteValue
 import kotlin.math.sign
+import io.github.offlinebrain.khexagon.algorythm.SymmetricPreComputedVisionTries as SPCVT
 
 @OptIn(ExperimentalKotest::class)
 @Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")

@@ -6,8 +6,6 @@ import io.github.offlinebrain.khexagon.math.bresenhamsLine
 import io.github.offlinebrain.khexagon.math.circle
 import io.github.offlinebrain.khexagon.math.distance
 
-typealias SPCVT = SymmetricPreComputedVisionTries
-
 private fun losKeygen(x: Int, y: Int, radius: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
 
