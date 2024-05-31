@@ -13,7 +13,7 @@ import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
  *
  * @see [io.github.offlinebrain.khexagon.math.distance]
  */
-infix fun <T : AxisPoint> T.distanceTo(other: AxisPoint): Int {
+fun <T : AxisPoint> T.distance(other: AxisPoint): Int {
     return distance(this.q, this.r, other.q, other.r)
 }
 
@@ -24,11 +24,11 @@ infix fun <T : AxisPoint> T.distanceTo(other: AxisPoint): Int {
  * @param other The destination coordinate.
  * @return A list of coordinates marking a path between the two points.
  */
-infix fun <T> T.lineTo(other: Coordinates<*>): List<T>
+fun <T> T.line(other: Coordinates<*>): List<T>
         where T : Coordinates<T>, T : FromHexCoordinates<T> {
     val left = this.hex
     val right = other.hex
-    val distance = this distanceTo other
+    val distance = this.distance(other)
     val result = mutableListOf<T>()
     for (i in 0..distance) {
         val q = left.q + (right.q - left.q) * i * 1.0f / distance
@@ -49,7 +49,7 @@ infix fun <T> T.lineTo(other: Coordinates<*>): List<T>
  *
  * @see [io.github.offlinebrain.khexagon.math.bresenhamsLine]
  */
-infix fun <T> T.bresenhamsLine(end: AxisPoint): List<T>
+fun <T> T.bresenhamsLine(end: AxisPoint): List<T>
         where T : AxisPoint, T : FromHexCoordinates<T> {
     val line = mutableListOf<T>()
     bresenhamsLine(this.q, this.r, end.q, end.r) { q, r ->

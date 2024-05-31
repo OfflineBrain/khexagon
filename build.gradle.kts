@@ -1,8 +1,8 @@
-import java.net.URL
+import java.net.URI
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("org.jetbrains.dokka") version "1.8.20"
+    id("org.jetbrains.dokka") version "1.9.20"
     `maven-publish`
 
     alias(libs.plugins.kotlin.multiplatform)
@@ -25,10 +25,9 @@ repositories {
     mavenLocal()
 }
 
-val kotestVersion = "5.6.2"
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
     jvm {
         compilations {
             all {
@@ -42,15 +41,6 @@ kotlin {
             useJUnitPlatform()
 
             systemProperties(System.getProperties().mapKeys { it.key as String })
-        }
-    }
-    js(IR) {
-        browser {
-            testTask {
-                useKarma {
-                    useChromiumHeadless()
-                }
-            }
         }
     }
 
@@ -84,8 +74,6 @@ kotlin {
                 implementation(kotlin("reflect"))
             }
         }
-        val jsMain by getting
-        val jsTest by getting
         val nativeMain by getting
         val nativeTest by getting
     }
@@ -193,7 +181,9 @@ tasks.dokkaHtml {
 
             sourceLink {
                 localDirectory.set(file("src/commonMain/kotlin"))
-                remoteUrl.set(URL("https://github.com/OfflineBrain/khexagon/tree/master/src/commonMain/kotlin"))
+                remoteUrl.set(
+                    URI.create("https://github.com/OfflineBrain/khexagon/tree/master/src/commonMain/kotlin").toURL()
+                )
                 remoteLineSuffix.set("#L")
             }
         }

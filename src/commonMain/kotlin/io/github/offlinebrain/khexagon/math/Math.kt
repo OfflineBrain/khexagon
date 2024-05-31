@@ -30,7 +30,6 @@ fun distance(fromQ: Int, fromR: Int, toQ: Int, toR: Int): Int {
  * @param radius The radius of the hexagonal area to loop over.
  * @param callback A function to call on each point within the defined area.
  *
- * @sample [io.github.offlinebrain.khexagon.samples.mathCircleCollect]
  */
 fun circle(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -> Unit) {
     for (q in -radius..radius) {
@@ -49,7 +48,6 @@ fun circle(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int)
  * @param radius The radius of the ring to loop over.
  * @param callback A function to call on each point along the ring.
  *
- * @sample [io.github.offlinebrain.khexagon.samples.mathRingCollect]
  */
 fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -> Unit) {
     val opposite = HexCoordinates.directions[4]
@@ -76,6 +74,8 @@ fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -
  * @param process A function that's called for each point on the line.
  */
 fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: Int, y: Int) -> Unit) {
+    fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
+
     process(startQ, startR)
 
     val (dq, sq) = diff(startQ, endQ)
@@ -127,8 +127,6 @@ fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: 
         }
     }
 }
-
-private fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
 
 
 fun flatHexWidth(radius: Int) = radius * 2
