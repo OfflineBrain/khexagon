@@ -2,7 +2,7 @@ import java.net.URI
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("org.jetbrains.dokka") version "1.8.20"
+    id("org.jetbrains.dokka") version "1.9.20"
     `maven-publish`
 
     alias(libs.plugins.kotlin.multiplatform)
@@ -25,7 +25,6 @@ repositories {
     mavenLocal()
 }
 
-val kotestVersion = "5.6.2"
 
 kotlin {
     jvmToolchain(21)
@@ -45,13 +44,7 @@ kotlin {
         }
     }
     js(IR) {
-        browser {
-            testTask {
-                useKarma {
-                    useChromiumHeadless()
-                }
-            }
-        }
+        nodejs()
     }
 
     val hostOs = System.getProperty("os.name")
