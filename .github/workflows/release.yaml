@@ -35,9 +35,6 @@ jobs:
         uses: gradle/gradle-build-action@v3
       - name: "Test JVM"
         run: ./gradlew jvmTest
-      - name: "Test JS"
-        continue-on-error: true
-        run: ./gradlew jsTest
       - name: "Test Native"
         if: always()
         run: ./gradlew nativeTest

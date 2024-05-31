@@ -43,9 +43,6 @@ kotlin {
             systemProperties(System.getProperties().mapKeys { it.key as String })
         }
     }
-    js(IR) {
-        nodejs()
-    }
 
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
@@ -77,8 +74,6 @@ kotlin {
                 implementation(kotlin("reflect"))
             }
         }
-        val jsMain by getting
-        val jsTest by getting
         val nativeMain by getting
         val nativeTest by getting
     }
