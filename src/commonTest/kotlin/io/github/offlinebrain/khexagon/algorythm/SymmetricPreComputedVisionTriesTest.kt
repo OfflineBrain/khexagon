@@ -4,7 +4,6 @@ import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
 import io.github.offlinebrain.khexagon.math.bresenhamsLine
 import io.github.offlinebrain.khexagon.math.circle
 import io.github.offlinebrain.khexagon.math.distance
-import io.github.offlinebrain.khexagon.math.distanceTo
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.IsolationMode
@@ -81,7 +80,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 val reversedLine = end.bresenhamsLine(start)
                 println()
                 it("${HexCoordinates.cached(q, r)} should construct line in order") {
-                    line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
+                    line should { l -> l.windowed(2).all { (a, b) -> a.distance(b) == 1 } }
                     line shouldHaveSize 3
                     line shouldBe reversedLine.reversed()
                 }
@@ -107,7 +106,7 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                 val line = start.bresenhamsLine(end)
 
 
-                line should { l -> l.windowed(2).all { (a, b) -> a distanceTo b == 1 } }
+                line should { l -> l.windowed(2).all { (a, b) -> a.distance(b) == 1 } }
             }
         }
 
@@ -176,12 +175,12 @@ class SymmetricPreComputedVisionTriesTest : DescribeSpec({
                     if (start == end) {
                         single++
                         los.distinct() shouldHaveSize 0
-                    } else if (start distanceTo end > 35) {
+                    } else if (start.distance(end) > 35) {
                         outOfRange++
                         visible shouldBe false
                     } else {
                         complete++
-                        los.distinct() shouldHaveSize ((start distanceTo end) + 1)
+                        los.distinct() shouldHaveSize ((start.distance(end)) + 1)
                     }
                 }
             }

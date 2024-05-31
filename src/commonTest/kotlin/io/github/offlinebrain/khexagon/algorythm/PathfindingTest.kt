@@ -1,7 +1,8 @@
 package io.github.offlinebrain.khexagon.algorythm
 
+import io.github.offlinebrain.khexagon.coordinates.AxisPoint
 import io.github.offlinebrain.khexagon.math.circle
-import io.github.offlinebrain.khexagon.math.distanceTo
+import io.github.offlinebrain.khexagon.math.distance
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeSameSizeAs
@@ -12,11 +13,11 @@ data class Point(
     override val r: Int,
     val walkable: Boolean = true,
     val cost: Int = 1,
-) : PathTile<Point> {
+) : PathTile<Point>, AxisPoint {
     override fun isWalkable(): Boolean = walkable
 
-    override fun heuristicTo(to: Point): Int {
-        return distanceTo(to)
+    override fun distanceTo(to: Point): Int {
+        return distance(q, r, to.q, to.r)
     }
 
     override fun moveCostTo(to: Point): Double {
@@ -190,7 +191,7 @@ class PathfindingTest : DescribeSpec({
                     to = testCase.to,
                     neighbors = neighborsProvider(testCase.map),
                     isWalkable = { it.walkable },
-                    heuristic = { a, b -> a distanceTo b },
+                    distance = { a, b -> a distanceTo b },
                     movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
                 )
                 result shouldBe testCase.expected
@@ -229,7 +230,7 @@ class AccessibilityTrieTest : DescribeSpec({
                 maxMoveCost = 3,
                 neighbors = neighbors,
                 isWalkable = { walkable.contains(it) },
-                heuristic = heuristic,
+                distance = heuristic,
                 movementCost = { a, b -> if (a == b) 0.0 else 1.0 },
             )
             trie.accessible shouldBeSameSizeAs expectedAccessibility
@@ -242,7 +243,7 @@ class AccessibilityTrieTest : DescribeSpec({
                 maxMoveCost = 2,
                 neighbors = neighbors,
                 isWalkable = { true },
-                heuristic = heuristic,
+                distance = heuristic,
                 movementCost = { a, b -> if (a == b) 0.0 else 1.0 },
             )
             val point = Point(1, 1)
@@ -271,7 +272,7 @@ class AccessibilityTrieTest : DescribeSpec({
                     neighbors(point).mapNotNull { n -> walkable.find { n == it } }
                 },
                 isWalkable = { walkable.contains(it) },
-                heuristic = heuristic,
+                distance = heuristic,
                 movementCost = { a, b -> if (a == b) 0.0 else b.cost.toDouble() }
             )
 
