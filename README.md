@@ -1,6 +1,7 @@
 # KHexagon Library
 
-[![Qodana](https://github.com/OfflineBrain/khexagon/actions/workflows/code_quality.yaml/badge.svg?branch=master)](https://github.com/OfflineBrain/khexagon/actions/workflows/code_quality.yaml)
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.offlinebrain/khexagon?color=%2300aa00)](https://central.sonatype.com/artifact/io.github.offlinebrain/khexagon)
+
 
 ## Overview
 
@@ -14,16 +15,22 @@ The library offers comprehensive functionality for operations in a hexagonal gri
 - Calculating distances between points.
 - Providing support for different types of hexagonal layouts (like pointy-top, flat-top, offset, and doubled grids).
 
-## Getting Started
 
-### Installation
+### Add dependency to your project
 
-To include KHexagon in your Kotlin/Java project, add the following dependency to your Gradle build file:
 
+#### Gradle
 ```kotlin
 dependencies {
-    implementation("io.github.offlinebrain:khexagon:$version")
+    implementation("io.github.offlinebrain:khexagon:$khexagonVersion")
 }
 ```
-
+#### Maven
+```xml
+<dependency>
+    <groupId>io.github.offlinebrain</groupId>
+    <artifactId>khexagon</artifactId>
+    <version>${khexagon.version}</version>
+</dependency>
+```
 

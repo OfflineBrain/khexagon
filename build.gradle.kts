@@ -1,4 +1,4 @@
-import java.net.URL
+import java.net.URI
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -28,7 +28,7 @@ repositories {
 val kotestVersion = "5.6.2"
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
     jvm {
         compilations {
             all {
@@ -193,7 +193,9 @@ tasks.dokkaHtml {
 
             sourceLink {
                 localDirectory.set(file("src/commonMain/kotlin"))
-                remoteUrl.set(URL("https://github.com/OfflineBrain/khexagon/tree/master/src/commonMain/kotlin"))
+                remoteUrl.set(
+                    URI.create("https://github.com/OfflineBrain/khexagon/tree/master/src/commonMain/kotlin").toURL()
+                )
                 remoteLineSuffix.set("#L")
             }
         }
