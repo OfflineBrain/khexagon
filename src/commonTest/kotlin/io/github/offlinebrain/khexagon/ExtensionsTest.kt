@@ -1,6 +1,8 @@
 package io.github.offlinebrain.khexagon
 
 import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toDoubleWidthCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toEvenQCoordinates
 import io.github.offlinebrain.khexagon.math.line
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec

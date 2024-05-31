@@ -1,14 +1,5 @@
 package io.github.offlinebrain.khexagon.coordinates
 
-import io.github.offlinebrain.khexagon.coordinates.Coordinates.Flat
-import io.github.offlinebrain.khexagon.coordinates.Coordinates.Pointy
-import io.github.offlinebrain.khexagon.coordinates.doubled.DoubleHeightCoordinates
-import io.github.offlinebrain.khexagon.coordinates.doubled.DoubleWidthCoordinates
-import io.github.offlinebrain.khexagon.coordinates.offset.EvenQCoordinates
-import io.github.offlinebrain.khexagon.coordinates.offset.EvenRCoordinates
-import io.github.offlinebrain.khexagon.coordinates.offset.OddQCoordinates
-import io.github.offlinebrain.khexagon.coordinates.offset.OddRCoordinates
-
 
 /**
  * Interface representing a point in a hexagonal grid using an axial coordinate system (q, r).
@@ -142,42 +133,6 @@ data class HexCoordinates(override val q: Int, override val r: Int) : Coordinate
 
     operator fun plus(other: HexCoordinates): HexCoordinates {
         return cached(q + other.q, r + other.r)
-    }
-
-    fun toEvenQCoordinates(): EvenQCoordinates {
-        val col = q
-        val row = r + (q + (q and 1)) / 2
-        return EvenQCoordinates(col, row)
-    }
-
-    fun toEvenRCoordinates(): EvenRCoordinates {
-        val col = q + (r + (r and 1)) / 2
-        val row = r
-        return EvenRCoordinates(col, row)
-    }
-
-    fun toOddQCoordinates(): OddQCoordinates {
-        val col = q
-        val row = r + (q - (q and 1)) / 2
-        return OddQCoordinates(col, row)
-    }
-
-    fun toOddRCoordinates(): OddRCoordinates {
-        val col = q + (r - (r and 1)) / 2
-        val row = r
-        return OddRCoordinates(col, row)
-    }
-
-    fun toDoubleHeightCoordinates(): DoubleHeightCoordinates {
-        val col = q
-        val row = (r * 2) + q
-        return DoubleHeightCoordinates(col, row)
-    }
-
-    fun toDoubleWidthCoordinates(): DoubleWidthCoordinates {
-        val col = (q * 2) + r
-        val row = r
-        return DoubleWidthCoordinates(col, row)
     }
 
     operator fun component3(): Int = s

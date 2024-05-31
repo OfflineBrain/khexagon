@@ -1,8 +1,6 @@
-package io.github.offlinebrain.khexagon.coordinates.doubled
+package io.github.offlinebrain.khexagon.coordinates
 
-import io.github.offlinebrain.khexagon.coordinates.Coordinates
-import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
-import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import kotlin.collections.map
 
 
 /**
@@ -90,4 +88,16 @@ data class DoubleHeightCoordinates(val col: Int, val row: Int) : Coordinates<Dou
             DoubleHeightCoordinates(0, 2),
         )
     }
+}
+
+fun HexCoordinates.toDoubleHeightCoordinates(): DoubleHeightCoordinates {
+    val col = q
+    val row = (r * 2) + q
+    return DoubleHeightCoordinates(col, row)
+}
+
+fun HexCoordinates.toDoubleWidthCoordinates(): DoubleWidthCoordinates {
+    val col = (q * 2) + r
+    val row = r
+    return DoubleWidthCoordinates(col, row)
 }

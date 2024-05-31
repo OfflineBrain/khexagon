@@ -1,8 +1,4 @@
-package io.github.offlinebrain.khexagon.coordinates.offset
-
-import io.github.offlinebrain.khexagon.coordinates.Coordinates
-import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
-import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+package io.github.offlinebrain.khexagon.coordinates
 
 interface OffsetCoordinates<T> : Coordinates<T> where T : OffsetCoordinates<T> {
     val col: Int
@@ -162,4 +158,29 @@ data class OddRCoordinates(override val col: Int, override val row: Int) : Offse
             arrayOf(Pair(1, 0), Pair(1, -1), Pair(0, -1), Pair(-1, 0), Pair(0, 1), Pair(1, 1))
         )
     }
+}
+
+
+fun HexCoordinates.toEvenQCoordinates(): EvenQCoordinates {
+    val col = q
+    val row = r + (q + (q and 1)) / 2
+    return EvenQCoordinates(col, row)
+}
+
+fun HexCoordinates.toEvenRCoordinates(): EvenRCoordinates {
+    val col = q + (r + (r and 1)) / 2
+    val row = r
+    return EvenRCoordinates(col, row)
+}
+
+fun HexCoordinates.toOddQCoordinates(): OddQCoordinates {
+    val col = q
+    val row = r + (q - (q and 1)) / 2
+    return OddQCoordinates(col, row)
+}
+
+fun HexCoordinates.toOddRCoordinates(): OddRCoordinates {
+    val col = q + (r - (r and 1)) / 2
+    val row = r
+    return OddRCoordinates(col, row)
 }

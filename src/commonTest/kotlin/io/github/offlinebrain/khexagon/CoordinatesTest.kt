@@ -2,6 +2,12 @@ package io.github.offlinebrain.khexagon
 
 import io.github.offlinebrain.khexagon.coordinates.Coordinates
 import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toDoubleHeightCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toDoubleWidthCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toEvenQCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toEvenRCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toOddQCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toOddRCoordinates
 import io.github.offlinebrain.khexagon.math.distance
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
