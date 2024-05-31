@@ -30,7 +30,6 @@ fun distance(fromQ: Int, fromR: Int, toQ: Int, toR: Int): Int {
  * @param radius The radius of the hexagonal area to loop over.
  * @param callback A function to call on each point within the defined area.
  *
- * @sample [io.github.offlinebrain.khexagon.samples.mathCircleCollect]
  */
 fun circle(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -> Unit) {
     for (q in -radius..radius) {
@@ -49,7 +48,6 @@ fun circle(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int)
  * @param radius The radius of the ring to loop over.
  * @param callback A function to call on each point along the ring.
  *
- * @sample [io.github.offlinebrain.khexagon.samples.mathRingCollect]
  */
 fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -> Unit) {
     val opposite = HexCoordinates.directions[4]
