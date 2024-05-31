@@ -19,14 +19,14 @@ private fun losKeygen(x: Int, y: Int, radius: Int) = radius + x + (2 * radius + 
  *  @param radius the vision radius for the tries.
  */
 class SymmetricPreComputedVisionTries(private val radius: Int) {
-    val root: TrieNode
+    val root: TrieNode = TrieNode(
+        q = 0,
+        r = 0,
+    )
+
     val fastLoSMap: MutableMap<Int, MutableList<TrieNode>> = mutableMapOf()
 
     init {
-        root = TrieNode(
-            q = 0,
-            r = 0,
-        )
         circle(
             radius = radius,
             callback = { q, r ->
@@ -243,7 +243,12 @@ data class TrieNode(
     internal fun add(coordinates: AxisPoint, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) =
         add(coordinates.q, coordinates.r, radius, callback)
 
-    internal fun add(destinationQ: Int, destinationR: Int, radius: Int, callback: (Int, TrieNode) -> Unit = { _, _ -> }) {
+    internal fun add(
+        destinationQ: Int,
+        destinationR: Int,
+        radius: Int,
+        callback: (Int, TrieNode) -> Unit = { _, _ -> }
+    ) {
         fun losKetgen(x: Int, y: Int) = radius + x + (2 * radius + 1) * (y + radius)
 
         var q = q

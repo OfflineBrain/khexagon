@@ -74,6 +74,8 @@ fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -
  * @param process A function that's called for each point on the line.
  */
 fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: Int, y: Int) -> Unit) {
+    fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
+
     process(startQ, startR)
 
     val (dq, sq) = diff(startQ, endQ)
@@ -125,8 +127,6 @@ fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: 
         }
     }
 }
-
-private fun diff(a: Int, b: Int) = if (a < b) (b - a) to 1 else (a - b) to -1
 
 
 fun flatHexWidth(radius: Int) = radius * 2
