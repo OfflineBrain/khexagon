@@ -2,6 +2,8 @@ package io.github.offlinebrain.khexagon
 
 import io.github.offlinebrain.khexagon.math.flatHexHeight
 import io.github.offlinebrain.khexagon.math.flatHexWidth
+import io.github.offlinebrain.khexagon.math.pointyHexHeight
+import io.github.offlinebrain.khexagon.math.pointyHexWidth
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -13,7 +15,7 @@ import io.kotest.property.exhaustive.collection
 @DisplayName("Math")
 class MathTest : DescribeSpec({
     describe("Dimensions") {
-        val width = Exhaustive.collection(
+        val flatWidth = Exhaustive.collection(
             listOf(
                 1 to 2,
                 2 to 4,
@@ -26,29 +28,38 @@ class MathTest : DescribeSpec({
         )
 
         it("should calculate the width of a flat hex") {
-            checkAll(width) { (radius, width) ->
+            checkAll(flatWidth) { (radius, width) ->
                 flatHexWidth(radius) shouldBe width
             }
         }
 
-        val height = Exhaustive.collection(
+        val flatHeight = Exhaustive.collection(
             listOf(
                 25 to 43,
                 50 to 86,
                 75 to 129,
                 10 to 17,
                 20 to 34,
+                5 to 8,
             )
         )
 
         it("should calculate the height of a flat hex") {
-            checkAll(height) { (radius, height) ->
+            checkAll(flatHeight) { (radius, height) ->
                 flatHexHeight(radius) shouldBe height
             }
         }
-    }
 
-    describe("Pixel to Hex") {
+        it("should calculate the width of a pointy hex") {
+            checkAll(flatWidth) { (radius, width) ->
+                pointyHexHeight(radius) shouldBe width
+            }
+        }
 
+        it("should calculate the height of a pointy hex") {
+            checkAll(flatHeight) { (radius, height) ->
+                pointyHexWidth(radius) shouldBe height
+            }
+        }
     }
 })

@@ -85,7 +85,7 @@ fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -
     var hex = HexCoordinates.cached(originQ, originR) + HexCoordinates.cached(opposite.q * radius, opposite.r * radius)
 
     for (direction in HexCoordinates.directions) {
-        for (j in 0..radius) {
+        (0..radius).forEach { j ->
             callback(hex.q, hex.r)
             hex += direction
         }
