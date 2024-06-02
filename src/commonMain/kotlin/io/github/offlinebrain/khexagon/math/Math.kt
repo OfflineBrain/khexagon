@@ -81,11 +81,18 @@ fun <T> T.circle(radius: Int): List<T>
  *
  */
 fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -> Unit) {
+    if (radius == 0) {
+        callback(originQ, originR)
+        return
+    } else if (radius < 0) {
+        return
+    }
+
     val opposite = HexCoordinates.directions[4]
     var hex = HexCoordinates.cached(originQ, originR) + HexCoordinates.cached(opposite.q * radius, opposite.r * radius)
 
     for (direction in HexCoordinates.directions) {
-        (0..radius).forEach { j ->
+        (1..radius).forEach { j ->
             callback(hex.q, hex.r)
             hex += direction
         }
