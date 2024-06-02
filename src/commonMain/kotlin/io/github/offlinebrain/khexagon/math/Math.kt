@@ -224,6 +224,7 @@ fun <T> T.line(other: Coordinates<*>): List<T>
 }
 
 fun flatHexWidth(radius: Int) = radius * 2
+
 fun flatHexHeight(radius: Int) = (radius * cos(PI / 6) * 2).toInt()
 
 fun pointyHexWidth(radius: Int) = flatHexHeight(radius)
