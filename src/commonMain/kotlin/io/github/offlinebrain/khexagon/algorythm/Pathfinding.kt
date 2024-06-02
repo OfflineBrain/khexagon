@@ -96,6 +96,14 @@ fun <T> aStar(
     return result.reversed()
 }
 
+/**
+ * Applies the A* pathfinding algorithm on a given graph to find the shortest path from the start point [from] to the destination [to].
+ *
+ * @param [from] The starting point in the graph.
+ * @param [to] The destination point in the graph.
+ * @param [neighbors] A function that takes a point and returns a list of its neighboring points.
+ * @return a list of points representing the shortest path from [from] to [to] based on the provided functions. Returns an empty list if no path is found.
+ */
 fun <T> aStar(
     from: T,
     to: T,
@@ -104,14 +112,17 @@ fun <T> aStar(
     aStar(from, to, neighbors, PathTile<T>::isWalkable, PathTile<T>::distanceTo, PathTile<T>::moveCostTo)
 
 /**
- * A data class that implements a pathfinding algorithm on a graph represented by points of type `T`.
+ * A data class that represents a trie structure for accessibility in a hexagonal grid.
+ * Used for pathfinding and accessibility checks.
+ * Uses the A* algorithm to build the trie structure.
  *
- * @property origin The initial point or node.
- * @property maxMoveCost The maximum allowed movement cost.
- * @property neighbors A function that takes a point and returns a list of its neighboring points.
- * @property isWalkable A function that takes a point and returns whether it's traversable.
- * @property distance A heuristic function to estimate the distance between two points.
- * @property movementCost A function that calculates the exact movement cost between two points. By default, it returns a constant cost of 1.0 for any pair of points or 0.0 if points are equal.
+ * @param T The type of the elements in the grid.
+ * @param origin The starting point in the grid.
+ * @param maxMoveCost The maximum cost of moving from one point to another.
+ * @param neighbors A function that returns a list of neighbors for a given point.
+ * @param isWalkable A function that checks if a given point is walkable.
+ * @param distance A function that calculates the distance between two points.
+ * @param movementCost A function that calculates the cost of moving from one point to another.
  */
 data class AccessibilityTrie<T>(
     val origin: T,
