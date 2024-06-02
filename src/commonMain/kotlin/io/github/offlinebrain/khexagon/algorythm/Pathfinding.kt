@@ -6,6 +6,7 @@ package io.github.offlinebrain.khexagon.algorythm
  * @param T the type of objects that can be used for movement cost and heuristic calculations.
  */
 interface PathTile<T : PathTile<T>> {
+
     /**
      * Calculates the movement cost to another tile.
      *
@@ -60,12 +61,12 @@ fun <T> aStar(
     if (distance(from, to) == 0) return listOf(from)
 
     val moveCost = movementCost(from, from)
-    val openSet = mutableListOf(from to moveCost)
+    val candidates = mutableListOf(from to moveCost)
     val costs = mutableMapOf(from to moveCost)
     val path = mutableMapOf<T, T>()
 
-    while (openSet.isNotEmpty()) {
-        val current = openSet.removeLast()
+    while (candidates.isNotEmpty()) {
+        val current = candidates.removeLast()
         if (current.first == to) {
             break
         }
@@ -76,7 +77,7 @@ fun <T> aStar(
             if (previousCost == null || newCost < previousCost) {
                 costs[neighbor] = newCost
                 val priority = newCost + distance(current.first, neighbor)
-                openSet.apply {
+                candidates.apply {
                     add(neighbor to priority)
                     sortByDescending { it.second }
                 }
@@ -142,11 +143,11 @@ data class AccessibilityTrie<T>(
         if (!isWalkable(origin)) return
 
         val moveCost = movementCost(origin, origin)
-        val openSet = mutableListOf(origin to moveCost)
+        val candidates = mutableListOf(origin to moveCost)
         val costs = mutableMapOf(origin to moveCost)
 
-        while (openSet.isNotEmpty()) {
-            val current = openSet.removeLast()
+        while (candidates.isNotEmpty()) {
+            val current = candidates.removeLast()
             if (current.second > maxMoveCost) {
                 continue
             }
@@ -157,7 +158,7 @@ data class AccessibilityTrie<T>(
                 if (previousCost == null || newCost < previousCost) {
                     costs[neighbor] = newCost
                     val priority = newCost + distance(current.first, neighbor)
-                    openSet.apply {
+                    candidates.apply {
                         add(neighbor to priority)
                         sortByDescending { it.second }
                     }
