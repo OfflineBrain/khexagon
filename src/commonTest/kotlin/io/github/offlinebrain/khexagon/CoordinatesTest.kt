@@ -2,7 +2,13 @@ package io.github.offlinebrain.khexagon
 
 import io.github.offlinebrain.khexagon.coordinates.Coordinates
 import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
-import io.github.offlinebrain.khexagon.math.distanceTo
+import io.github.offlinebrain.khexagon.coordinates.toDoubleHeightCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toDoubleWidthCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toEvenQCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toEvenRCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toOddQCoordinates
+import io.github.offlinebrain.khexagon.coordinates.toOddRCoordinates
+import io.github.offlinebrain.khexagon.math.distance
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -35,19 +41,19 @@ class CoordinatesTest : DescribeSpec({
             it("should be 0 for the same coordinates") {
                 checkAll(gen) { q ->
                     val coordinates = HexCoordinates.cached(q, q)
-                    (coordinates distanceTo coordinates) shouldBe 0
+                    (coordinates.distance(coordinates)) shouldBe 0
                 }
             }
 
             it("should be 1 for adjacent coordinates") {
                 checkAll(gen) { q ->
                     val coordinates = HexCoordinates.cached(q, q)
-                    (coordinates distanceTo coordinates + HexCoordinates.cached(1, 0)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.cached(0, 1)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.cached(-1, 1)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.cached(-1, 0)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.cached(0, -1)) shouldBe 1
-                    (coordinates distanceTo coordinates + HexCoordinates.cached(1, -1)) shouldBe 1
+                    (coordinates.distance(coordinates + HexCoordinates.cached(1, 0))) shouldBe 1
+                    (coordinates.distance(coordinates + HexCoordinates.cached(0, 1))) shouldBe 1
+                    (coordinates.distance(coordinates + HexCoordinates.cached(-1, 1))) shouldBe 1
+                    (coordinates.distance(coordinates + HexCoordinates.cached(-1, 0))) shouldBe 1
+                    (coordinates.distance(coordinates + HexCoordinates.cached(0, -1))) shouldBe 1
+                    (coordinates.distance(coordinates + HexCoordinates.cached(1, -1))) shouldBe 1
                 }
             }
 
@@ -55,7 +61,7 @@ class CoordinatesTest : DescribeSpec({
                 checkAll(gen, gen, gen, gen) { q1, r1, q2, r2 ->
                     val coordinates1 = HexCoordinates.cached(q1, r1)
                     val coordinates2 = HexCoordinates.cached(q2, r2)
-                    (coordinates1 distanceTo coordinates2) shouldBe maxOf(
+                    (coordinates1.distance(coordinates2)) shouldBe maxOf(
                         abs(q1 - q2),
                         abs(r1 - r2),
                         abs(coordinates1.s - coordinates2.s)
@@ -83,7 +89,7 @@ class CoordinatesTest : DescribeSpec({
                 checkAll(gen, gen) { q, r ->
                     val coordinates = HexCoordinates.cached(q, r)
                     coordinates.neighbors.forEach {
-                        (coordinates distanceTo it) shouldBe 1
+                        (coordinates.distance(it)) shouldBe 1
                     }
                 }
             }
@@ -174,7 +180,7 @@ class CoordinatesTest : DescribeSpec({
                     checkAll(gen, gen) { q, r ->
                         val coordinates = HexCoordinates.cached(q, r).toDoubleWidthCoordinates()
                         coordinates.neighbors.forEach {
-                            (coordinates.toHexCoordinates() distanceTo it.toHexCoordinates()) shouldBe 1
+                            (coordinates.toHexCoordinates().distance(it.toHexCoordinates())) shouldBe 1
                         }
                     }
                 }
@@ -220,7 +226,7 @@ class CoordinatesTest : DescribeSpec({
                     checkAll(gen, gen) { q, r ->
                         val coordinates = HexCoordinates.cached(q, r).toDoubleHeightCoordinates()
                         coordinates.neighbors.forEach {
-                            (coordinates.toHexCoordinates() distanceTo it.toHexCoordinates()) shouldBe 1
+                            (coordinates.toHexCoordinates().distance(it.toHexCoordinates())) shouldBe 1
                         }
                     }
                 }
