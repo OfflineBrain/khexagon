@@ -200,6 +200,11 @@ fun <T> T.bresenhamsLine(end: AxisPoint): List<T>
  */
 fun line(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: Int, y: Int) -> Unit) {
     val distance = distance(startQ, startR, endQ, endR)
+    if (distance == 0) {
+        process(startQ, startR)
+        return
+    }
+
     for (i in 0..distance) {
         val q = startQ + (endQ - startQ) * i * 1.0f / distance
         val r = startR + (endR - startR) * i * 1.0f / distance

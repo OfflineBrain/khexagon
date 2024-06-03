@@ -3,20 +3,13 @@ package io.github.offlinebrain.khexagon
 import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
 import io.github.offlinebrain.khexagon.coordinates.toDoubleWidthCoordinates
 import io.github.offlinebrain.khexagon.coordinates.toEvenQCoordinates
-import io.github.offlinebrain.khexagon.math.Layout
-import io.github.offlinebrain.khexagon.math.Orientation
-import io.github.offlinebrain.khexagon.math.Point
 import io.github.offlinebrain.khexagon.math.circle
 import io.github.offlinebrain.khexagon.math.flatHexHeight
 import io.github.offlinebrain.khexagon.math.flatHexWidth
-import io.github.offlinebrain.khexagon.math.hexCornerOffset
 import io.github.offlinebrain.khexagon.math.hexRound
-import io.github.offlinebrain.khexagon.math.hexToPixel
 import io.github.offlinebrain.khexagon.math.line
-import io.github.offlinebrain.khexagon.math.pixelToHex
 import io.github.offlinebrain.khexagon.math.pointyHexHeight
 import io.github.offlinebrain.khexagon.math.pointyHexWidth
-import io.github.offlinebrain.khexagon.math.polygonCorners
 import io.github.offlinebrain.khexagon.math.ring
 import io.kotest.core.annotation.DisplayName
 import io.kotest.core.spec.style.DescribeSpec
@@ -80,9 +73,8 @@ class MathTest : DescribeSpec({
         }
     }
 
-    val gen = Arb.int(-100..100)
-
     describe("line calculation") {
+        val gen = Arb.int(-100..100)
         it("should calculate a line between two points") {
             val start = HexCoordinates.cached(0, 0)
             val end = HexCoordinates.cached(2, -2)
