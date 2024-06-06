@@ -15,7 +15,7 @@ korge {
 	//targetDefault()
 
 // To selectively enable targets
-	
+
 	targetJvm()
 	targetJs()
     targetWasm()
@@ -29,6 +29,6 @@ korge {
 
 dependencies {
     add("commonMainApi", project(":deps"))
-    //add("commonMainApi", project(":korge-dragonbones"))
+    add("commonMainApi", "io.github.offlinebrain:khexagon:0.2.0")
 }
 
