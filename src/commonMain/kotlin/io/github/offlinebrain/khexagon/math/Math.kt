@@ -1,10 +1,6 @@
 package io.github.offlinebrain.khexagon.math
 
-import io.github.offlinebrain.khexagon.coordinates.AxisPoint
-import io.github.offlinebrain.khexagon.coordinates.Coordinates
-import io.github.offlinebrain.khexagon.coordinates.FractionalHexCoordinates
-import io.github.offlinebrain.khexagon.coordinates.FromHexCoordinates
-import io.github.offlinebrain.khexagon.coordinates.HexCoordinates
+import io.github.offlinebrain.khexagon.coordinates.*
 import kotlin.math.*
 
 
@@ -92,7 +88,7 @@ fun ring(originQ: Int = 0, originR: Int = 0, radius: Int, callback: (Int, Int) -
     var hex = HexCoordinates.cached(originQ, originR) + HexCoordinates.cached(opposite.q * radius, opposite.r * radius)
 
     for (direction in HexCoordinates.directions) {
-        (1..radius).forEach { j ->
+        (1..radius).forEach { _ ->
             callback(hex.q, hex.r)
             hex += direction
         }
@@ -129,7 +125,7 @@ fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: 
     if (dq >= dr && dq >= ds) {
         test = (dq + test) shr 1
 
-        (0 until dq).forEach { i ->
+        (0 until dq).forEach { _ ->
             test -= dr
             q += sq
             if (test < 0) {
@@ -141,7 +137,7 @@ fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: 
     } else if (ds >= dr) {
         test = (ds + test) shr 1
 
-        (0 until ds).forEach { i ->
+        (0 until ds).forEach { _ ->
             test -= dr
             s += ss
             if (test < 0) {
@@ -154,7 +150,7 @@ fun bresenhamsLine(startQ: Int, startR: Int, endQ: Int, endR: Int, process: (x: 
     } else {
         test = (dr + test) shr 1
 
-        (0 until dr).forEach { i ->
+        (0 until dr).forEach { _ ->
             test -= dq
             r += sr
             if (test < 0) {
@@ -295,15 +291,26 @@ fun hexCornerOffset(layout: Layout, corner: Int): Point {
  * @param layout The layout of the hexagonal grid.
  * @param hex The hexagon.
  * @return A list of points representing the corners of the hexagon.
+ *
+ * @see polygonCornersOf for transforming multiple hexes.
  */
 fun polygonCorners(layout: Layout, hex: HexCoordinates): List<Point> {
-    val corners = mutableListOf<Point>()
-    val center = hexToPixel(layout, hex)
-    for (i in 0..5) {
-        val offset = hexCornerOffset(layout, i)
-        corners.add(Point(center.x + offset.x, center.y + offset.y))
+    return polygonCornersOf(layout)(hex)
+}
+
+/**
+ * Creates function to map hex coordinates into polygon corners in pixel coordinates.
+ *
+ * @param layout The layout of the hexagonal grid.
+ * @return A function that takes [HexCoordinates] and returns its polygon corners in defined layout.
+ */
+fun polygonCornersOf(layout: Layout): (HexCoordinates) -> List<Point> {
+    val offsets = (0..5).map { hexCornerOffset(layout, it) }
+
+    return {
+        val center = hexToPixel(layout, it)
+        offsets.map { offset -> Point(center.x + offset.x, center.y + offset.y) }
     }
-    return corners
 }
 
 /**
